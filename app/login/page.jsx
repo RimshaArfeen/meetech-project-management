@@ -76,7 +76,7 @@ export default function LoginPage() {
                // router.refresh(); // Forces Next.js to re-sync server components with new cookies
                window.location.href = destination;
 
-               
+
           } catch (error) {
                setError(error.message);
           } finally {
@@ -98,7 +98,7 @@ export default function LoginPage() {
                          <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center text-text-inverse shadow-lg shadow-accent/20 mb-4">
                               <ListTodo size={28} />
                          </div>
-                         <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">ProManage</h1>
+                         <h1 className="text-4xl font-bold text-text-primary tracking-tight">ProManage</h1>
                          <p className="text-text-muted mt-2 text-center">Enter your credentials to access your workspace</p>
                     </div>
 

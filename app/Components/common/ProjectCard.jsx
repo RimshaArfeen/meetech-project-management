@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Calendar, AlertCircle, ChevronRight } from 'lucide-react';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, role }) => {
      const getRiskColor = (risk) => {
           switch (risk) {
                case 'LOW': return 'text-green-500 bg-green-500/10';
@@ -37,7 +37,7 @@ const ProjectCard = ({ project }) => {
      };
 
      return (
-          <Link href={`/developer/projects/${project.id}`}>
+          <Link href={`/${role}/projects/${project.id}`}>
                <div className="group bg-bg-surface border border-border-default rounded-2xl p-6 hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
                     <div className="space-y-4">
                          {/* Header with Risk Badge */}

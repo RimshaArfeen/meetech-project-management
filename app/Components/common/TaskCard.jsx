@@ -16,7 +16,7 @@ import {
      Loader
 } from 'lucide-react';
 
-const TaskCard = ({ task }) => {
+const TaskCard = ({ role, task }) => {
      const getPriorityColor = (priority) => {
           switch (priority) {
                case 'URGENT': return 'text-red-500 bg-red-500/10';
@@ -65,7 +65,7 @@ const TaskCard = ({ task }) => {
      const isOverdue = task.deadline && new Date(task.deadline) < new Date() && task.status !== 'COMPLETED';
 
      return (
-          <Link href={`/developer/tasks/${task.id}`}>
+          <Link href={`/${role}/tasks/${task.id}`}>
                <div className="group bg-bg-surface border border-border-default rounded-xl p-5 hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
                     <div className="space-y-4">
                          {/* Header with Priority */}

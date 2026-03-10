@@ -28,7 +28,7 @@ const App = () => {
      const [activeTab, setActiveTab] = useState('Overview');
      const [isLoading, setIsLoading] = useState(false);
      const router = useRouter();
-     
+
      const handleLogout = async () => {
           // Trigger SweetAlert2 Confirmation
           const result = await MySwal.fire({
@@ -151,11 +151,11 @@ const App = () => {
                </aside>
 
                {/* Main Content Area */}
-               <main className="lg:ml-64 p-page-x py-page-y">
+               <main className="lg:ml-64 p-page-x pb-32 md:py-page-y">
                     {/* Top Header */}
                     <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                          <div>
-                              <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">Executive Dashboard</h1>
+                              <h1 className="text-4xl font-bold text-text-primary tracking-tight">Executive Dashboard</h1>
                               <p className="text-text-muted">Welcome back, Marcus. Here's a summary of your organization's health.</p>
                          </div>
                          <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ const App = () => {
                                         </div>
                                    </div>
                                    <p className="text-text-muted text-ui font-medium">{stat.label}</p>
-                                   <h3 className="text-headline-lg font-bold text-text-primary">{stat.value}</h3>
+                                   <h3 className="text-4xl font-bold text-text-primary">{stat.value}</h3>
                               </div>
                          ))}
                     </section>

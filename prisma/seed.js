@@ -43,7 +43,7 @@ async function main() {
                department: 'Project Management'
           },
           {
-               email: 'teamlead@company.com',
+               email: 'lead@company.cteamom',
                password: await hashPassword('Lead@123'),
                name: 'Tanzeel Lead',
                role: 'TEAM_LEAD',

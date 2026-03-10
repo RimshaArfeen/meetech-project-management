@@ -33,7 +33,7 @@ const ProjectsDashboard = () => {
 
      if (loading && projects.length === 0) {
           return (
-               <div className="min-h-screen bg-bg-page p-page-x py-page-y flex items-center justify-center">
+               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
                     <div className="text-center">
                          <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
                          <p className="text-text-muted">Loading your projects...</p>
@@ -43,13 +43,13 @@ const ProjectsDashboard = () => {
      }
 
      return (
-          <div className="min-h-screen bg-bg-page p-page-x py-page-y">
+          <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y">
                <div className="max-w-[1400px] mx-auto space-y-8">
 
                     {/* Header Area */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                          <div className="space-y-2">
-                              <h1 className="text-headline-lg font-black text-text-primary tracking-tight">Active Projects</h1>
+                              <h1 className="text-4xl font-black text-text-primary tracking-tight">Active Projects</h1>
                               <p className="text-text-muted text-sm font-medium">
                                    You are currently working on {projects.length} active project{projects.length !== 1 ? 's' : ''}.
                               </p>
@@ -100,8 +100,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => handleStatusFilter('all')}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${filters.status === 'all'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         All
@@ -109,8 +109,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => handleStatusFilter('ACTIVE')}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${filters.status === 'ACTIVE'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         Active
@@ -118,8 +118,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => handleStatusFilter('IN_DEVELOPMENT')}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${filters.status === 'IN_DEVELOPMENT'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         In Dev
@@ -127,8 +127,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => handleStatusFilter('COMPLETED')}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${filters.status === 'COMPLETED'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         Completed
@@ -141,8 +141,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => setViewMode('grid')}
                                         className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-disabled hover:text-text-muted'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-disabled hover:text-text-muted'
                                              }`}
                                    >
                                         <LayoutGrid size={16} />
@@ -150,8 +150,8 @@ const ProjectsDashboard = () => {
                                    <button
                                         onClick={() => setViewMode('list')}
                                         className={`p-2 rounded-lg transition-all ${viewMode === 'list'
-                                                  ? 'bg-bg-surface text-accent shadow-sm'
-                                                  : 'text-text-disabled hover:text-text-muted'
+                                             ? 'bg-bg-surface text-accent shadow-sm'
+                                             : 'text-text-disabled hover:text-text-muted'
                                              }`}
                                    >
                                         <List size={16} />
@@ -178,7 +178,7 @@ const ProjectsDashboard = () => {
                     ) : viewMode === 'grid' ? (
                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                               {projects.map(project => (
-                                   <ProjectCard key={project.id} project={project} />
+                                   <ProjectCard role="developer" key={project.id} project={project} />
                               ))}
                          </div>
                     ) : (
@@ -209,7 +209,7 @@ const ProjectsDashboard = () => {
                                                             <div className="w-16 h-1.5 bg-bg-subtle rounded-full overflow-hidden">
                                                                  <div
                                                                       className={`h-full ${project.progress < 30 ? 'bg-red-500' :
-                                                                                project.progress < 70 ? 'bg-yellow-500' : 'bg-green-500'
+                                                                           project.progress < 70 ? 'bg-yellow-500' : 'bg-green-500'
                                                                            }`}
                                                                       style={{ width: `${project.progress}%` }}
                                                                  />
@@ -229,8 +229,8 @@ const ProjectsDashboard = () => {
                                                   </td>
                                                   <td className="p-4">
                                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${project.riskLevel === 'LOW' ? 'bg-green-500/10 text-green-500' :
-                                                                 project.riskLevel === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                                      'bg-red-500/10 text-red-500'
+                                                            project.riskLevel === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                                 'bg-red-500/10 text-red-500'
                                                             }`}>
                                                             {project.riskLevel}
                                                        </span>

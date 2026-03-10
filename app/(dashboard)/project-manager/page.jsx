@@ -25,14 +25,14 @@ const App = () => {
      const [showCreateModal, setShowCreateModal] = useState(false);
 
 
-       <button
-                                                                      onClick={handleLogout}
-                                                                      disabled={isLoading}
-                                                                      className={`flex items-center gap-2 px-4 py-2 bg-red-700 text-text-inverse rounded-xl font-medium hover:bg-red-800 transition-all shadow-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                                 >
-                                                                      <LogOut size={18} />
-                                                                      <span>{isLoading ? 'Logging out...' : 'Logout'}</span>
-                                                                 </button>
+     // <button
+     //      // onClick={handleLogout}
+     //      disabled={isLoading}
+     //      className={`flex items-center gap-2 px-4 py-2 bg-red-700 text-text-inverse rounded-xl font-medium hover:bg-red-800 transition-all shadow-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+     // >
+     //      <LogOut size={18} />
+     //      <span>{isLoading ? 'Logging out...' : 'Logout'}</span>
+     // </button>
      // Mock data for the dashboard
      const projects = [
           { id: 1, name: 'Cloud Migration Phase 2', status: 'In Progress', progress: 65, teamLead: 'Sarah Chen', deadline: '2024-05-15', health: 'On Track' },
@@ -42,37 +42,7 @@ const App = () => {
 
      return (
           <div className="min-h-screen bg-bg-page text-text-body font-sans flex">
-               {/* Sidebar Nav */}
-               <aside className="w-64 border-r border-border-default bg-bg-surface flex-shrink-0 hidden md:flex flex-col sticky top-0 h-screen">
-                    <div className="p-6">
-                         <div className="flex items-center gap-2 text-accent font-bold text-xl">
-                              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-text-inverse">
-                                   <Briefcase size={20} />
-                              </div>
-                              <span className="tracking-tight text-text-primary">ProManage</span>
-                         </div>
-                    </div>
-
-                    <nav className="flex-1 px-4 space-y-1">
-                         <NavItem icon={<LayoutDashboard size={20} />} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
-                         <NavItem icon={<Briefcase size={20} />} label="My Projects" active={activeTab === 'projects'} onClick={() => setActiveTab('projects')} />
-                         <NavItem icon={<Users size={20} />} label="Team Leads" active={activeTab === 'teams'} onClick={() => setActiveTab('teams')} />
-                         <NavItem icon={<Calendar size={20} />} label="Timelines" active={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
-                         <NavItem icon={<FileText size={20} />} label="Reports" active={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
-                    </nav>
-
-                    <div className="p-4 border-t border-border-default">
-                         <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-bg-subtle transition-colors cursor-pointer">
-                              <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent font-medium">
-                                   JD
-                              </div>
-                              <div>
-                                   <p className="text-sm font-semibold text-text-primary">John Doe</p>
-                                   <p className="text-xs text-text-muted">Project Manager</p>
-                              </div>
-                         </div>
-                    </div>
-               </aside>
+             
 
                {/* Main Content */}
                <main className="flex-1 flex flex-col min-w-0">
@@ -262,7 +232,7 @@ const StatCard = ({ label, value, icon, trend }) => (
                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{label}</span>
           </div>
           <div className="flex items-baseline gap-2">
-               <span className="text-headline-lg font-bold text-text-primary">{value}</span>
+               <span className="text-4xl font-bold text-text-primary">{value}</span>
                <span className="text-xs text-emerald-500 font-medium">{trend}</span>
           </div>
      </div>

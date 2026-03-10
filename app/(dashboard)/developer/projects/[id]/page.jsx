@@ -78,7 +78,7 @@ const ProjectDetailPage = ({ params }) => {
 
      if (loading) {
           return (
-               <div className="min-h-screen bg-bg-page p-page-x py-page-y flex items-center justify-center">
+               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
                     <div className="text-center">
                          <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
                          <p className="text-text-muted">Loading project details...</p>
@@ -89,7 +89,7 @@ const ProjectDetailPage = ({ params }) => {
 
      if (error || !project) {
           return (
-               <div className="min-h-screen bg-bg-page p-page-x py-page-y flex items-center justify-center">
+               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
                     <div className="text-center max-w-md">
                          <AlertCircle size={48} className="text-red-500 mx-auto mb-4" />
                          <h2 className="text-xl font-bold text-text-primary mb-2">Project Not Found</h2>
@@ -110,7 +110,7 @@ const ProjectDetailPage = ({ params }) => {
           : null;
 
      return (
-          <div className="min-h-screen bg-bg-page p-page-x py-page-y animate-in fade-in duration-500">
+          <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y animate-in fade-in duration-500">
                <div className="max-w-[1400px] mx-auto space-y-6">
 
                     {/* Navigation & Breadcrumbs */}
@@ -142,7 +142,7 @@ const ProjectDetailPage = ({ params }) => {
                                         </span>
                                    )}
                               </div>
-                              <h1 className="text-headline-lg font-black text-text-primary leading-tight">{project.name}</h1>
+                              <h1 className="text-4xl font-black text-text-primary leading-tight">{project.name}</h1>
                               <p className="text-text-body text-sm leading-relaxed">{project.description}</p>
                          </div>
 
@@ -224,8 +224,8 @@ const ProjectDetailPage = ({ params }) => {
                                         <button
                                              onClick={() => setActiveTab('tasks')}
                                              className={`px-6 py-4 text-sm font-bold transition-colors relative ${activeTab === 'tasks'
-                                                       ? 'text-accent'
-                                                       : 'text-text-muted hover:text-text-primary'
+                                                  ? 'text-accent'
+                                                  : 'text-text-muted hover:text-text-primary'
                                                   }`}
                                         >
                                              My Tasks ({project.taskStats?.total || 0})
@@ -236,8 +236,8 @@ const ProjectDetailPage = ({ params }) => {
                                         <button
                                              onClick={() => setActiveTab('milestones')}
                                              className={`px-6 py-4 text-sm font-bold transition-colors relative ${activeTab === 'milestones'
-                                                       ? 'text-accent'
-                                                       : 'text-text-muted hover:text-text-primary'
+                                                  ? 'text-accent'
+                                                  : 'text-text-muted hover:text-text-primary'
                                                   }`}
                                         >
                                              Milestones ({project.milestones?.length || 0})
@@ -248,8 +248,8 @@ const ProjectDetailPage = ({ params }) => {
                                         <button
                                              onClick={() => setActiveTab('documents')}
                                              className={`px-6 py-4 text-sm font-bold transition-colors relative ${activeTab === 'documents'
-                                                       ? 'text-accent'
-                                                       : 'text-text-muted hover:text-text-primary'
+                                                  ? 'text-accent'
+                                                  : 'text-text-muted hover:text-text-primary'
                                                   }`}
                                         >
                                              Documents ({project.documents?.length || 0})
@@ -283,8 +283,8 @@ const ProjectDetailPage = ({ params }) => {
                                                                  <div className="flex items-center gap-3">
                                                                       {task.deadline && (
                                                                            <span className={`text-xs ${new Date(task.deadline) < new Date() && task.status !== 'COMPLETED'
-                                                                                     ? 'text-red-500'
-                                                                                     : 'text-text-muted'
+                                                                                ? 'text-red-500'
+                                                                                : 'text-text-muted'
                                                                                 }`}>
                                                                                 {new Date(task.deadline).toLocaleDateString()}
                                                                            </span>
@@ -330,8 +330,8 @@ const ProjectDetailPage = ({ params }) => {
                                                                            <p className="text-xs text-text-muted">{milestone.description}</p>
                                                                       </div>
                                                                       <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${milestone.status === 'COMPLETED' ? 'bg-green-500/10 text-green-500' :
-                                                                                milestone.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
-                                                                                     'bg-yellow-500/10 text-yellow-500'
+                                                                           milestone.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
+                                                                                'bg-yellow-500/10 text-yellow-500'
                                                                            }`}>
                                                                            {milestone.status}
                                                                       </span>

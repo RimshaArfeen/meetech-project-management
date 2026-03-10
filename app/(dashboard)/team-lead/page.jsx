@@ -1,4 +1,4 @@
-
+ 
 // app/(dashboard)/team-lead/page.js
 'use client';
 import React, { useState } from 'react';
@@ -49,7 +49,7 @@ const App = () => {
      return (
           <div className="min-h-screen bg-bg-page text-text-body font-sans flex">
                {/* Sidebar Nav */}
-               <aside className="w-64 border-r border-border-default bg-bg-surface flex-shrink-0 hidden md:flex flex-col sticky top-0 h-screen">
+               {/* <aside className="w-64 border-r border-border-default bg-bg-surface flex-shrink-0 hidden md:flex flex-col sticky top-0 h-screen">
                     <div className="p-6">
                          <div className="flex items-center gap-2 text-accent font-bold text-xl">
                               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-text-inverse">
@@ -78,7 +78,7 @@ const App = () => {
                               </div>
                          </div>
                     </div>
-               </aside>
+               </aside> */}
 
                {/* Main Content */}
                <main className="flex-1 flex flex-col min-w-0">
