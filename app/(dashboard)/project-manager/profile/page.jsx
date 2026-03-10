@@ -477,7 +477,7 @@ const ProfilePage = () => {
                                                                  name="name"
                                                                  value={formData.name}
                                                                  onChange={handleInputChange}
-                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                                  required
                                                             />
                                                        </div>
@@ -516,7 +516,7 @@ const ProfilePage = () => {
                                                                  value={formData.phone}
                                                                  onChange={handleInputChange}
                                                                  placeholder="+1 (555) 000-0000"
-                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             />
                                                        </div>
                                                   </div>
@@ -536,7 +536,7 @@ const ProfilePage = () => {
                                                                  value={formData.jobTitle}
                                                                  onChange={handleInputChange}
                                                                  placeholder="e.g., Senior Developer"
-                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             />
                                                        </div>
                                                   </div>
@@ -556,7 +556,7 @@ const ProfilePage = () => {
                                                                  value={formData.department}
                                                                  onChange={handleInputChange}
                                                                  placeholder="e.g., Engineering"
-                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                                 className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             />
                                                        </div>
                                                   </div>
@@ -635,7 +635,7 @@ const ProfilePage = () => {
                                                             value={passwordData.currentPassword}
                                                             onChange={handlePasswordChange}
                                                             placeholder="Enter current password"
-                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             required
                                                        />
                                                        <button
@@ -660,7 +660,7 @@ const ProfilePage = () => {
                                                             value={passwordData.newPassword}
                                                             onChange={handlePasswordChange}
                                                             placeholder="Enter new password"
-                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             required
                                                        />
                                                        <button
@@ -719,7 +719,7 @@ const ProfilePage = () => {
                                                             value={passwordData.confirmPassword}
                                                             onChange={handlePasswordChange}
                                                             placeholder="Confirm new password"
-                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-2 focus:ring-accent/10 focus:border-accent outline-none transition-all"
+                                                            className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 px-4 pr-12 text-sm font-medium text-text-body focus:ring-1 focus:ring-accent/10 focus:border-accent outline-none transition-all"
                                                             required
                                                        />
                                                        <button

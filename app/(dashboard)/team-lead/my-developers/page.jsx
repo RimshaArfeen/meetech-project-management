@@ -114,7 +114,7 @@ const Page = () => {
                                    value={searchInput}
                                    onChange={(e) => setSearchInput(e.target.value)}
                                    placeholder="Search by name, email, or skill..."
-                                   className=" w-full pl-10 pr-10 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:ring-2 focus:ring-accent outline-none text-ui "
+                                   className=" w-full pl-10 pr-10 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:ring-1 focus:ring-accent outline-none text-ui "
                               />
                               {searchInput && (
                                    <button

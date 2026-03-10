@@ -164,7 +164,7 @@ const App = () => {
                                    <input
                                         type="text"
                                         placeholder="Search projects..."
-                                        className="pl-10 pr-4 py-2 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent outline-none w-full md:w-64 transition-all"
+                                        className="pl-10 pr-4 py-2 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent outline-none w-full md:w-64 transition-all"
                                    />
                               </div>
                               <button className="p-2.5 bg-bg-subtle border border-border-default rounded-xl hover:bg-border-subtle transition-colors text-text-body relative">

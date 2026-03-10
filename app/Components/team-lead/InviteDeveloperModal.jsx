@@ -103,7 +103,7 @@ export default function InviteDeveloperModal({ isOpen, onClose, onSubmit }) {
                                    onChange={handleChange}
                                    required
                                    disabled={submitting || success}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="John Doe"
                               />
                          </div>
@@ -119,7 +119,7 @@ export default function InviteDeveloperModal({ isOpen, onClose, onSubmit }) {
                                    onChange={handleChange}
                                    required
                                    disabled={submitting || success}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="john@company.com"
                               />
                          </div>
@@ -134,7 +134,7 @@ export default function InviteDeveloperModal({ isOpen, onClose, onSubmit }) {
                                    value={formData.jobTitle}
                                    onChange={handleChange}
                                    disabled={submitting || success}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="Senior Frontend Developer"
                               />
                          </div>
@@ -146,7 +146,7 @@ export default function InviteDeveloperModal({ isOpen, onClose, onSubmit }) {
                                    value={formData.department}
                                    onChange={handleChange}
                                    disabled={submitting || success}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                               >
                                    <option value="">Select department</option>
                                    <option value="Engineering">Engineering</option>
@@ -167,7 +167,7 @@ export default function InviteDeveloperModal({ isOpen, onClose, onSubmit }) {
                                    value={formData.skills}
                                    onChange={handleChange}
                                    disabled={submitting || success}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="React, Node.js, TypeScript"
                               />
                               <p className="text-[10px] text-text-muted mt-1">

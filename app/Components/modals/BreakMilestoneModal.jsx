@@ -121,7 +121,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                               <select
                                    value={selectedProject}
                                    onChange={(e) => setSelectedProject(e.target.value)}
-                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    required
                               >
                                    <option value="">Choose a project...</option>
@@ -142,7 +142,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                    name="milestoneId"
                                    value={formData.milestoneId}
                                    onChange={handleChange}
-                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    required
                                    disabled={!selectedProject}
                               >
@@ -166,7 +166,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                    value={formData.title}
                                    onChange={handleChange}
                                    placeholder="e.g., Implement authentication middleware"
-                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    required
                               />
                          </div>
@@ -182,7 +182,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                    onChange={handleChange}
                                    rows="3"
                                    placeholder="Describe the task requirements..."
-                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none resize-none"
+                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none resize-none"
                               />
                          </div>
 
@@ -197,7 +197,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                         name="assigneeId"
                                         value={formData.assigneeId}
                                         onChange={handleChange}
-                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                         required
                                    >
                                         <option value="">Select developer...</option>
@@ -218,7 +218,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                         name="priority"
                                         value={formData.priority}
                                         onChange={handleChange}
-                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    >
                                         <option value="LOW">Low</option>
                                         <option value="MEDIUM">Medium</option>
@@ -238,7 +238,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                         value={formData.deadline}
                                         onChange={handleChange}
                                         min={new Date().toISOString().split('T')[0]}
-                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    />
                               </div>
 
@@ -255,7 +255,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
                                         min="0.5"
                                         step="0.5"
                                         placeholder="e.g., 4"
-                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-2 focus:ring-accent/20 outline-none"
+                                        className="w-full p-3 bg-bg-subtle border border-border-default rounded-xl focus:ring-1 focus:ring-accent/20 outline-none"
                                    />
                               </div>
                          </div>

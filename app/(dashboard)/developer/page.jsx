@@ -217,13 +217,13 @@ const DeveloperDashboard = () => {
 
      if (loading) {
           return (
-              <Spinner title="Your Dashboard"/>
+               <Spinner title="Your Dashboard" />
           );
      }
 
      if (error) {
           return (
-             <FailedLoading refetch={refetch} error={error} />
+               <FailedLoading refetch={refetch} error={error} />
           );
      }
 
@@ -445,8 +445,8 @@ const TaskItem = ({ task, isSelected, onSelect, onSubmitReview }) => {
           <div
                onClick={onSelect}
                className={`bg-bg-surface border p-4 rounded-xl transition-all cursor-pointer group ${isSelected
-                         ? 'border-accent ring-2 ring-accent/20'
-                         : 'border-border-default hover:border-accent/50 hover:shadow-md'
+                    ? 'border-accent ring-1 ring-accent/20'
+                    : 'border-border-default hover:border-accent/50 hover:shadow-md'
                     }`}
           >
                <div className="flex items-center justify-between gap-4">
@@ -459,8 +459,8 @@ const TaskItem = ({ task, isSelected, onSelect, onSubmitReview }) => {
                                    }
                               }}
                               className={`transition-colors ${task.status === 'Completed'
-                                        ? 'text-green-500'
-                                        : 'text-text-disabled hover:text-accent'
+                                   ? 'text-green-500'
+                                   : 'text-text-disabled hover:text-accent'
                                    }`}
                               disabled={task.status === 'Completed'}
                          >
@@ -473,8 +473,8 @@ const TaskItem = ({ task, isSelected, onSelect, onSubmitReview }) => {
 
                          <div className="flex-1">
                               <p className={`text-sm font-semibold transition-colors ${task.status === 'Completed'
-                                        ? 'text-text-disabled line-through'
-                                        : 'text-text-primary group-hover:text-accent'
+                                   ? 'text-text-disabled line-through'
+                                   : 'text-text-primary group-hover:text-accent'
                                    }`}>
                                    {task.task}
                               </p>

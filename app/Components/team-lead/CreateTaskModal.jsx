@@ -79,7 +79,7 @@
 //                                    value={formData.title}
 //                                    onChange={handleChange}
 //                                    required
-//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                                    placeholder="e.g., Implement user authentication"
 //                               />
 //                          </div>
@@ -91,7 +91,7 @@
 //                                    value={formData.description}
 //                                    onChange={handleChange}
 //                                    rows="3"
-//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                                    placeholder="Detailed description of the task..."
 //                               />
 //                          </div>
@@ -105,7 +105,7 @@
 //                                         name="priority"
 //                                         value={formData.priority}
 //                                         onChange={handleChange}
-//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                                    >
 //                                         <option value="LOW">Low</option>
 //                                         <option value="MEDIUM">Medium</option>
@@ -123,7 +123,7 @@
 //                                         name="estimatedHours"
 //                                         value={formData.estimatedHours}
 //                                         onChange={handleChange}
-//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                                         placeholder="8"
 //                                    />
 //                               </div>
@@ -138,7 +138,7 @@
 //                                    name="deadline"
 //                                    value={formData.deadline}
 //                                    onChange={handleChange}
-//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                    className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                               />
 //                          </div>
 
@@ -149,7 +149,7 @@
 //                                         name="milestoneId"
 //                                         value={formData.milestoneId}
 //                                         onChange={handleChange}
-//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+//                                         className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
 //                                    >
 //                                         <option value="">No milestone</option>
 //                                         {milestones.map(m => (
@@ -304,7 +304,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                    onChange={handleChange}
                                    required
                                    disabled={submitting}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="e.g., Implement user authentication"
                               />
                          </div>
@@ -317,7 +317,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                    onChange={handleChange}
                                    rows="3"
                                    disabled={submitting}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    placeholder="Detailed description of the task..."
                               />
                          </div>
@@ -332,7 +332,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                         value={formData.priority}
                                         onChange={handleChange}
                                         disabled={submitting}
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    >
                                         <option value="LOW">Low</option>
                                         <option value="MEDIUM">Medium</option>
@@ -353,7 +353,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                         disabled={submitting}
                                         min="0"
                                         step="0.5"
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                         placeholder="8"
                                    />
                               </div>
@@ -370,7 +370,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                    onChange={handleChange}
                                    disabled={submitting}
                                    min={new Date().toISOString().split('T')[0]}
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                               />
                          </div>
 
@@ -387,7 +387,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, projectId }
                                         value={formData.milestoneId}
                                         onChange={handleChange}
                                         disabled={submitting}
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-50"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 disabled:opacity-50"
                                    >
                                         <option value="">No milestone</option>
                                         {milestones.map(m => (

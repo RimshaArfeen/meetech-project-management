@@ -133,7 +133,7 @@ export default function LoginPage() {
                                                   onChange={handleChange}
                                                   placeholder="name@company.com"
                                                   required
-                                                  className="w-full pl-10 pr-4 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
+                                                  className="w-full pl-10 pr-4 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-1 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
                                              />
                                         </div>
                                    </div>
@@ -159,7 +159,7 @@ export default function LoginPage() {
                                                   onChange={handleChange}
                                                   placeholder="••••••••"
                                                   required
-                                                  className="w-full pl-10 pr-12 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
+                                                  className="w-full pl-10 pr-12 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-1 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
                                              />
                                              <button
                                                   type="button"

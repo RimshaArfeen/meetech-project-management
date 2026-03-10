@@ -26,8 +26,8 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 
 const TaskDetailPage = ({ params }) => {
-          const unwrappedParams = React.use(params);
-     
+     const unwrappedParams = React.use(params);
+
      const router = useRouter();
      const { task, loading, error, refetch } = useDeveloperTask(unwrappedParams.id);
      const [status, setStatus] = useState('');
@@ -151,10 +151,10 @@ const TaskDetailPage = ({ params }) => {
                               Task ID: {task.id.slice(-8)}
                          </span>
                          <div className={`ml-2 w-2 h-2 rounded-full ${task.status === 'COMPLETED' ? 'bg-green-500' :
-                                   task.status === 'IN_PROGRESS' ? 'bg-accent' :
-                                        task.status === 'REVIEW' ? 'bg-yellow-500' :
-                                             task.status === 'BLOCKED' ? 'bg-red-500' :
-                                                  'bg-slate-500'
+                              task.status === 'IN_PROGRESS' ? 'bg-accent' :
+                                   task.status === 'REVIEW' ? 'bg-yellow-500' :
+                                        task.status === 'BLOCKED' ? 'bg-red-500' :
+                                             'bg-slate-500'
                               }`} />
                     </div>
                     <div className="flex items-center gap-3">
@@ -177,7 +177,7 @@ const TaskDetailPage = ({ params }) => {
                                    value={reviewNotes}
                                    onChange={(e) => setReviewNotes(e.target.value)}
                                    placeholder="e.g., Focus on the error handling in the Prisma middleware..."
-                                   className="w-full h-32 p-3 bg-bg-subtle border border-border-default rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                   className="w-full h-32 p-3 bg-bg-subtle border border-border-default rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                               />
                               <div className="flex gap-3 pt-2">
                                    <button
@@ -334,7 +334,7 @@ const TaskDetailPage = ({ params }) => {
                                    </div>
 
                                    {/* Comment Input */}
-                                   <div className="bg-bg-surface border border-border-strong rounded-2xl p-2 focus-within:ring-2 focus-within:ring-accent/20 transition-all shadow-sm">
+                                   <div className="bg-bg-surface border border-border-strong rounded-2xl p-2 focus-within:ring-1 focus-within:ring-accent/20 transition-all shadow-sm">
                                         <textarea
                                              value={comment}
                                              onChange={(e) => setComment(e.target.value)}
@@ -377,8 +377,8 @@ const TaskDetailPage = ({ params }) => {
                                              }}
                                              disabled={updating || status === option.value}
                                              className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${status === option.value
-                                                       ? `${option.color} border-transparent text-white`
-                                                       : 'border-border-default hover:border-accent hover:bg-bg-subtle'
+                                                  ? `${option.color} border-transparent text-white`
+                                                  : 'border-border-default hover:border-accent hover:bg-bg-subtle'
                                                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                                         >
                                              <span className="text-sm font-bold">{option.label}</span>

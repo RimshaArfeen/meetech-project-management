@@ -42,7 +42,7 @@ const App = () => {
 
      return (
           <div className="min-h-screen bg-bg-page text-text-body font-sans flex">
-             
+
 
                {/* Main Content */}
                <main className="flex-1 flex flex-col min-w-0">
@@ -173,21 +173,21 @@ const App = () => {
                                    <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                              <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Project Name</label>
-                                             <input type="text" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none" placeholder="e.g. Q4 Growth Campaign" />
+                                             <input type="text" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none" placeholder="e.g. Q4 Growth Campaign" />
                                         </div>
                                         <div className="space-y-2">
                                              <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Target Deadline</label>
-                                             <input type="date" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none" />
+                                             <input type="date" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none" />
                                         </div>
                                    </div>
                                    <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Project Scope</label>
-                                        <textarea className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg h-24 focus:ring-2 focus:ring-accent outline-none" placeholder="Describe the key deliverables..." />
+                                        <textarea className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg h-24 focus:ring-1 focus:ring-accent outline-none" placeholder="Describe the key deliverables..." />
                                    </div>
                                    <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                              <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Assign Lead</label>
-                                             <select className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none appearance-none">
+                                             <select className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none appearance-none">
                                                   <option>Select a Team Lead</option>
                                                   <option>Sarah Chen</option>
                                                   <option>Marcus Rodriguez</option>

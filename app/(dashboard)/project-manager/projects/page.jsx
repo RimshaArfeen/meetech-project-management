@@ -65,7 +65,7 @@ export default function ProjectsPage() {
                          <input
                               type="text"
                               placeholder="Search projects, leads, or milestones..."
-                              className="w-full pl-10 pr-4 py-2 bg-bg-surface border border-border-default rounded-lg focus:ring-2 focus:ring-focus-ring outline-none text-text-body transition-all"
+                              className="w-full pl-10 pr-4 py-2 bg-bg-surface border border-border-default rounded-lg focus:ring-1 focus:ring-focus-ring outline-none text-text-body transition-all"
                          />
                     </div>
                     <select className="px-4 py-2 bg-bg-surface border border-border-default rounded-lg text-text-body outline-none">

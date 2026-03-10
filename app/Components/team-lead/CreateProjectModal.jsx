@@ -68,7 +68,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         placeholder="e.g., E-Commerce Platform"
                                    />
                               </div>
@@ -80,7 +80,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                         value={formData.description}
                                         onChange={handleChange}
                                         rows="3"
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         placeholder="Brief description of the project..."
                                    />
                               </div>
@@ -92,7 +92,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="status"
                                              value={formData.status}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         >
                                              <option value="UPCOMING">Upcoming</option>
                                              <option value="ACTIVE">Active</option>
@@ -106,7 +106,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="priority"
                                              value={formData.priority}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         >
                                              <option value="LOW">Low</option>
                                              <option value="MEDIUM">Medium</option>
@@ -126,7 +126,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="startDate"
                                              value={formData.startDate}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         />
                                    </div>
                                    <div>
@@ -138,7 +138,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="deadline"
                                              value={formData.deadline}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         />
                                    </div>
                               </div>
@@ -152,7 +152,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                         name="budget"
                                         value={formData.budget}
                                         onChange={handleChange}
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         placeholder="15000"
                                    />
                               </div>
@@ -172,7 +172,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                         value={formData.clientName}
                                         onChange={handleChange}
                                         required
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         placeholder="John Doe"
                                    />
                               </div>
@@ -187,7 +187,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                         value={formData.clientEmail}
                                         onChange={handleChange}
                                         required
-                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         placeholder="client@example.com"
                                    />
                               </div>
@@ -202,7 +202,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="clientCompany"
                                              value={formData.clientCompany}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                              placeholder="Company Name"
                                         />
                                    </div>
@@ -215,7 +215,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSubmit }) {
                                              name="clientPhone"
                                              value={formData.clientPhone}
                                              onChange={handleChange}
-                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                              placeholder="+1 234 567 890"
                                         />
                                    </div>

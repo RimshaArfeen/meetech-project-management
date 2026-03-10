@@ -78,7 +78,7 @@ export default function ProjectsPage() {
                                    value={searchInput}
                                    onChange={(e) => setSearchInput(e.target.value)}
                                    placeholder="Search by project name, client, or description..."
-                                   className="w-full bg-bg-surface border border-border-default rounded-xl py-3 pl-12 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                                   className="w-full bg-bg-surface border border-border-default rounded-xl py-3 pl-12 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20 focus:border-accent transition-all"
                               />
                               {searchInput && (
                                    <button

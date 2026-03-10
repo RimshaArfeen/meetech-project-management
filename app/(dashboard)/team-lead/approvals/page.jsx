@@ -256,7 +256,7 @@ const ApprovalsPage = () => {
                          <select
                               value={filters.projectId}
                               onChange={(e) => setFilters(prev => ({ ...prev, projectId: e.target.value }))}
-                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none"
+                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-1 focus:ring-accent outline-none"
                          >
                               <option value="">All Projects</option>
                               {projects.map(project => (
@@ -270,7 +270,7 @@ const ApprovalsPage = () => {
                          <select
                               value={filters.developerId}
                               onChange={(e) => setFilters(prev => ({ ...prev, developerId: e.target.value }))}
-                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none"
+                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-1 focus:ring-accent outline-none"
                          >
                               <option value="">All Developers</option>
                               {developers.map(dev => (
@@ -284,7 +284,7 @@ const ApprovalsPage = () => {
                          <select
                               value={filters.priority}
                               onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none"
+                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-1 focus:ring-accent outline-none"
                          >
                               <option value="all">All Priorities</option>
                               <option value="URGENT">Urgent</option>
@@ -297,7 +297,7 @@ const ApprovalsPage = () => {
                          <select
                               value={filters.days}
                               onChange={(e) => setFilters(prev => ({ ...prev, days: e.target.value }))}
-                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-2 focus:ring-accent outline-none"
+                              className="w-full md:w-auto px-3 py-1.5 bg-bg-subtle border border-border-default rounded-lg text-sm focus:ring-1 focus:ring-accent outline-none"
                          >
                               <option value="7">Last 7 days</option>
                               <option value="3">Last 3 days</option>
@@ -379,7 +379,7 @@ const ApprovalCard = ({
      const waitingHours = task.waitingTime || 0;
 
      return (
-          <div className={`bg-bg-surface border rounded-2xl transition-all overflow-hidden ${isExpanded ? 'border-accent shadow-xl ring-2 ring-accent/20' : 'border-border-default hover:border-accent/50'
+          <div className={`bg-bg-surface border rounded-2xl transition-all overflow-hidden ${isExpanded ? 'border-accent shadow-xl ring-1 ring-accent/20' : 'border-border-default hover:border-accent/50'
                }`}>
                {/* Summary Row */}
                <div
@@ -562,7 +562,7 @@ const ApprovalCard = ({
                                              value={feedback}
                                              onChange={(e) => onFeedbackChange(e.target.value)}
                                              placeholder="Add detailed feedback for the developer (required for changes, optional for approval)..."
-                                             className={`w-full min-h-[120px] bg-bg-page border rounded-xl p-3 text-ui focus:ring-2 focus:ring-accent outline-none transition-all ${feedback.length < 10 && feedback.length > 0 ? 'border-red-300' : 'border-border-default'
+                                             className={`w-full min-h-[120px] bg-bg-page border rounded-xl p-3 text-ui focus:ring-1 focus:ring-accent outline-none transition-all ${feedback.length < 10 && feedback.length > 0 ? 'border-red-300' : 'border-border-default'
                                                   }`}
                                         />
                                         {feedback.length > 0 && feedback.length < 10 && (

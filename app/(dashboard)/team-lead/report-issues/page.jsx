@@ -232,7 +232,7 @@ const Page = () => {
                                         <select
                                              value={selectedProject || ''}
                                              onChange={(e) => handleProjectChange(e.target.value)}
-                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-2 focus:ring-accent outline-none appearance-none cursor-pointer ${formErrors.projectId ? 'border-red-500' : 'border-border-default'
+                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-1 focus:ring-accent outline-none appearance-none cursor-pointer ${formErrors.projectId ? 'border-red-500' : 'border-border-default'
                                                   }`}
                                         >
                                              <option value="">Select Assigned Project...</option>
@@ -260,7 +260,7 @@ const Page = () => {
                                              <select
                                                   value={selectedMilestone || ''}
                                                   onChange={(e) => handleMilestoneChange(e.target.value)}
-                                                  className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-2 text-ui focus:ring-2 focus:ring-accent outline-none"
+                                                  className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-2 text-ui focus:ring-1 focus:ring-accent outline-none"
                                                   disabled={!selectedProject}
                                              >
                                                   <option value="">Optional</option>
@@ -285,7 +285,7 @@ const Page = () => {
                                                   name="taskId"
                                                   value={formData.taskId}
                                                   onChange={handleInputChange}
-                                                  className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-2 text-ui focus:ring-2 focus:ring-accent outline-none"
+                                                  className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-2 text-ui focus:ring-1 focus:ring-accent outline-none"
                                                   disabled={!selectedMilestone}
                                              >
                                                   <option value="">Optional</option>
@@ -315,7 +315,7 @@ const Page = () => {
                                              value={formData.subject}
                                              onChange={handleInputChange}
                                              placeholder="e.g., Critical API Downtime / Budget Overrun Risk"
-                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-2 focus:ring-accent outline-none ${formErrors.subject ? 'border-red-500' : 'border-border-default'
+                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-1 focus:ring-accent outline-none ${formErrors.subject ? 'border-red-500' : 'border-border-default'
                                                   }`}
                                         />
                                         {formErrors.subject && (
@@ -334,7 +334,7 @@ const Page = () => {
                                              onChange={handleInputChange}
                                              rows={6}
                                              placeholder="Describe the issue, its impact on the deadline, and suggested resolution..."
-                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-2 focus:ring-accent outline-none ${formErrors.description ? 'border-red-500' : 'border-border-default'
+                                             className={`w-full bg-bg-page border rounded-xl px-4 py-3 text-ui focus:ring-1 focus:ring-accent outline-none ${formErrors.description ? 'border-red-500' : 'border-border-default'
                                                   }`}
                                         />
                                         {formErrors.description && (
@@ -356,7 +356,7 @@ const Page = () => {
                                              onChange={handleInputChange}
                                              rows={3}
                                              placeholder="e.g., This will delay the sprint by 3 days, affecting the client demo..."
-                                             className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-3 text-ui focus:ring-2 focus:ring-accent outline-none"
+                                             className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-3 text-ui focus:ring-1 focus:ring-accent outline-none"
                                         />
                                    </div>
 
@@ -371,7 +371,7 @@ const Page = () => {
                                              onChange={handleInputChange}
                                              rows={3}
                                              placeholder="e.g., We need additional developer resources or scope adjustment..."
-                                             className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-3 text-ui focus:ring-2 focus:ring-accent outline-none"
+                                             className="w-full bg-bg-page border border-border-default rounded-xl px-4 py-3 text-ui focus:ring-1 focus:ring-accent outline-none"
                                         />
                                    </div>
 
@@ -490,7 +490,7 @@ const Page = () => {
                                         <button
                                              key={level}
                                              onClick={() => setUrgency(level)}
-                                             className={`w-full text-left px-4 py-3 rounded-xl text-caption font-bold transition-all border ${getUrgencyColor(level)} ${urgency === level ? 'ring-2 ring-accent/20' : ''
+                                             className={`w-full text-left px-4 py-3 rounded-xl text-caption font-bold transition-all border ${getUrgencyColor(level)} ${urgency === level ? 'ring-1 ring-accent/20' : ''
                                                   }`}
                                         >
                                              <div className="flex items-center justify-between">

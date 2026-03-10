@@ -66,7 +66,7 @@ export default function AssignDeveloperModal({ isOpen, onClose, onAssign, task }
                                    value={search}
                                    onChange={(e) => setSearch(e.target.value)}
                                    placeholder="Search developers by name, email, or role..."
-                                   className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                   className="w-full bg-bg-subtle border border-border-default rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                               />
                          </div>
 
@@ -83,8 +83,8 @@ export default function AssignDeveloperModal({ isOpen, onClose, onAssign, task }
                                              key={dev.id}
                                              onClick={() => setSelectedDeveloper(dev)}
                                              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedDeveloper?.id === dev.id
-                                                       ? 'border-accent bg-accent/5'
-                                                       : 'border-border-default hover:border-accent/30 hover:bg-bg-subtle/50'
+                                                  ? 'border-accent bg-accent/5'
+                                                  : 'border-border-default hover:border-accent/30 hover:bg-bg-subtle/50'
                                                   }`}
                                         >
                                              <div className="flex items-center justify-between">

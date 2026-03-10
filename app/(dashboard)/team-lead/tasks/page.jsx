@@ -268,7 +268,7 @@ const TeamLeadTasksPage = () => {
                                         value={searchInput}
                                         onChange={(e) => setSearchInput(e.target.value)}
                                         placeholder="Search tasks, projects, or developers..."
-                                        className="w-full pl-10 pr-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none transition-all text-ui"
+                                        className="w-full pl-10 pr-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none transition-all text-ui"
                                    />
                               </div>
 
@@ -276,7 +276,7 @@ const TeamLeadTasksPage = () => {
                               <select
                                    value={selectedProject}
                                    onChange={(e) => setSelectedProject(e.target.value)}
-                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none min-w-[150px]"
+                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
                               >
                                    <option value="">All Projects</option>
                                    {projects.map(project => (
@@ -288,7 +288,7 @@ const TeamLeadTasksPage = () => {
                               <select
                                    value={selectedAssignee}
                                    onChange={(e) => setSelectedAssignee(e.target.value)}
-                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none min-w-[150px]"
+                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
                               >
                                    <option value="">All Developers</option>
                                    {developers.map(dev => (
@@ -300,7 +300,7 @@ const TeamLeadTasksPage = () => {
                               <select
                                    value={filters.status}
                                    onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none min-w-[150px]"
+                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
                               >
                                    <option value="all">All Status</option>
                                    <option value="REVIEW">In Review ({stats.inReview})</option>
@@ -314,7 +314,7 @@ const TeamLeadTasksPage = () => {
                               <select
                                    value={sortBy}
                                    onChange={(e) => setSortBy(e.target.value)}
-                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-2 focus:ring-accent outline-none min-w-[150px]"
+                                   className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
                               >
                                    <option value="deadline">Sort by Deadline</option>
                                    <option value="priority">Sort by Priority</option>

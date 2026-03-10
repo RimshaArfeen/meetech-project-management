@@ -103,8 +103,8 @@ export default function TasksPage() {
                                    <button
                                         onClick={() => setView('grid')}
                                         className={`p-1.5 rounded-md transition-colors ${view === 'grid'
-                                                  ? 'bg-bg-surface shadow-sm text-accent'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface shadow-sm text-accent'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         <LayoutGrid size={18} />
@@ -112,8 +112,8 @@ export default function TasksPage() {
                                    <button
                                         onClick={() => setView('list')}
                                         className={`p-1.5 rounded-md transition-colors ${view === 'list'
-                                                  ? 'bg-bg-surface shadow-sm text-accent'
-                                                  : 'text-text-muted hover:text-text-primary'
+                                             ? 'bg-bg-surface shadow-sm text-accent'
+                                             : 'text-text-muted hover:text-text-primary'
                                              }`}
                                    >
                                         <List size={18} />
@@ -123,8 +123,8 @@ export default function TasksPage() {
                               <button
                                    onClick={() => setShowFilters(!showFilters)}
                                    className={`flex items-center gap-2 px-3 py-2 text-xs font-bold rounded-lg transition-all ${showFilters
-                                             ? 'bg-accent text-text-inverse'
-                                             : 'text-text-body bg-bg-surface border border-border-strong hover:bg-bg-subtle'
+                                        ? 'bg-accent text-text-inverse'
+                                        : 'text-text-body bg-bg-surface border border-border-strong hover:bg-bg-subtle'
                                         }`}
                               >
                                    <Filter size={16} /> Filter
@@ -180,7 +180,7 @@ export default function TasksPage() {
                                              value={searchInput}
                                              onChange={(e) => setSearchInput(e.target.value)}
                                              placeholder="Search tasks..."
-                                             className="w-full bg-bg-subtle border border-border-default rounded-lg pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                             className="w-full bg-bg-subtle border border-border-default rounded-lg pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                         />
                                         {searchInput && (
                                              <button
@@ -196,7 +196,7 @@ export default function TasksPage() {
                                    <select
                                         value={filters.status}
                                         onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                    >
                                         <option value="all">All Status</option>
                                         <option value="NOT_STARTED">Not Started ({stats.notStarted})</option>
@@ -210,7 +210,7 @@ export default function TasksPage() {
                                    <select
                                         value={filters.priority}
                                         onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                    >
                                         <option value="all">All Priorities</option>
                                         <option value="URGENT">Urgent</option>
@@ -223,7 +223,7 @@ export default function TasksPage() {
                                    <select
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
-                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                        className="px-3 py-2 bg-bg-subtle border border-border-default rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-accent/20"
                                    >
                                         <option value="deadline">Sort by Deadline</option>
                                         <option value="priority">Sort by Priority</option>
@@ -341,9 +341,9 @@ export default function TasksPage() {
                                                   </td>
                                                   <td className="p-4">
                                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${task.priority === 'URGENT' ? 'bg-red-500/10 text-red-500' :
-                                                                 task.priority === 'HIGH' ? 'bg-orange-500/10 text-orange-500' :
-                                                                      task.priority === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                                           'bg-green-500/10 text-green-500'
+                                                            task.priority === 'HIGH' ? 'bg-orange-500/10 text-orange-500' :
+                                                                 task.priority === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                                      'bg-green-500/10 text-green-500'
                                                             }`}>
                                                             {task.priority}
                                                        </span>

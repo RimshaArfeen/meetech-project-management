@@ -293,7 +293,7 @@ const ProjectDetailPage = ({ params }) => {
                                                                            value={task.status}
                                                                            onChange={(e) => handleTaskStatusUpdate(task.id, e.target.value)}
                                                                            disabled={updatingTask === task.id}
-                                                                           className="px-3 py-1 bg-bg-surface border border-border-default rounded-lg text-xs font-bold focus:outline-none focus:ring-2 focus:ring-accent/20"
+                                                                           className="px-3 py-1 bg-bg-surface border border-border-default rounded-lg text-xs font-bold focus:outline-none focus:ring-1 focus:ring-accent/20"
                                                                       >
                                                                            <option value="NOT_STARTED">Not Started</option>
                                                                            <option value="IN_PROGRESS">In Progress</option>
