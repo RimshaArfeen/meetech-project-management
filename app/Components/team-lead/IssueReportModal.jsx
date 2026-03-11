@@ -47,7 +47,7 @@ export default function IssueReportModal({ isOpen, onClose, onSubmit, projects }
 
      return (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 ">
-               <div className="bg-bg-surface w-full max-w-xl rounded-2xl shadow-2xl border border-border-default h-[90vh] overflow-y-auto chat-scroll ">
+               <div className="bg-bg-surface w-full max-w-xl rounded-2xl shadow-2xl border border-border-default h-[90vh] overflow-y-auto chat-scroll  chat-scroll ">
                     <div className="p-6 border-b border-border-default flex justify-between items-center bg-bg-subtle">
                          <h2 className="text-headline font-bold text-text-primary flex items-center gap-2">
                               <AlertCircle size={20} className="text-red-500" />

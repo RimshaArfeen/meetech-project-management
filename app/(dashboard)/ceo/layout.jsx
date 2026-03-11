@@ -6,11 +6,11 @@ export const metadata = {
      description: "Developer project management dashboard",
 };
 
-export default function DeveloperLayout({ children }) {
+export default function CEOLayout({ children }) {
      return (
           <div className="min-h-screen bg-bg-page text-text-body font-sans flex">
                {/* 1. Sidebar stays static here */}
-               <Sidebar userRole="DEVELOPER" />
+               <Sidebar userRole="CEO" />
 
                {/* 2. Right side container */}
                <main className="flex-1 flex flex-col min-w-0">

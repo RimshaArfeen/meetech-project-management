@@ -269,7 +269,7 @@ const DeveloperDashboard = () => {
                </header>
 
                {/* Dashboard Content */}
-               <div className="flex-1 overflow-y-auto p-6 space-y-8">
+               <div className="flex-1 overflow-y-auto chat-scroll  p-6 space-y-8">
                     {/* Quick Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                          <StatCard
@@ -611,7 +611,7 @@ const TaskDetails = ({
                                    <MessageSquare size={14} /> Comments ({taskComments.length})
                               </h4>
 
-                              <div className="space-y-4 max-h-48 overflow-y-auto pr-2">
+                              <div className="space-y-4 max-h-48 overflow-y-auto chat-scroll  pr-2">
                                    {taskComments.map((c) => (
                                         <div key={c.id} className="space-y-1">
                                              <div className="flex justify-between items-center">

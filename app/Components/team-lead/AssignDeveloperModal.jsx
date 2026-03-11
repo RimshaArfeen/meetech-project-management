@@ -46,7 +46,7 @@ export default function AssignDeveloperModal({ isOpen, onClose, onAssign, task }
 
      return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-               <div className="bg-bg-surface rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+               <div className="bg-bg-surface rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto chat-scroll ">
                     <div className="sticky top-0 bg-bg-surface border-b border-border-default p-6 flex justify-between items-center">
                          <div>
                               <h2 className="text-xl font-bold text-text-primary">Assign Developer</h2>
@@ -77,7 +77,7 @@ export default function AssignDeveloperModal({ isOpen, onClose, onAssign, task }
                                    <p className="text-sm text-text-muted mt-4">Loading developers...</p>
                               </div>
                          ) : filteredDevelopers.length > 0 ? (
-                              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                              <div className="space-y-3 max-h-[400px] overflow-y-auto chat-scroll ">
                                    {filteredDevelopers.map(dev => (
                                         <div
                                              key={dev.id}

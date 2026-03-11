@@ -21,6 +21,7 @@ import {
 import { useProfile } from '../../../../hooks/useProfile'; // Adjust the import path as needed
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Spinner from '../../../Components/common/Spinner';
 
 const ProfilePage = () => {
      const router = useRouter();
@@ -268,14 +269,7 @@ const ProfilePage = () => {
 
      // Loading state
      if (loading) {
-          return (
-               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading profile...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Profile..." />;
      }
 
      if (!user) {
@@ -413,7 +407,7 @@ const ProfilePage = () => {
                               </div>
 
                               {/* Role badge */}
-                              <div className="hidden md:block px-4 py-2 bg-accent/10 rounded-2xl border border-accent/20">
+                              <div className="hidden lg:block px-4 py-2 bg-accent/10 rounded-2xl border border-accent/20">
                                    <p className="text-[10px] font-black text-accent uppercase tracking-widest">Role</p>
                                    <p className="text-sm font-bold text-text-primary">{user.role.replace('_', ' ')}</p>
                               </div>

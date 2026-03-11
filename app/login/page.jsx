@@ -188,7 +188,7 @@ export default function LoginPage() {
                                    </button>
                               </form>
 
-                              <div className="relative my-8 text-center">
+                              {/* <div className="relative my-8 text-center">
                                    <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-border-default"></div>
                                    </div>
@@ -197,7 +197,7 @@ export default function LoginPage() {
                                    </span>
                               </div>
 
-                              {/* Social Logins */}
+                              Social Logins
                               <div className="grid grid-cols-2 gap-4">
                                    <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-lg hover:bg-bg-subtle text-ui font-semibold text-text-primary transition-colors">
                                         <Chrome size={18} className="text-[#4285F4]" />
@@ -207,7 +207,7 @@ export default function LoginPage() {
                                         <Github size={18} />
                                         GitHub
                                    </button>
-                              </div>
+                              </div> */}
                          </div>
 
                          {/* Footer Info */}

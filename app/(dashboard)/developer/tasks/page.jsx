@@ -273,7 +273,7 @@ export default function TasksPage() {
                )}
 
                {/* Task Grid/List Area */}
-               <main className="flex-1 overflow-y-auto chat-scroll p-6">
+               <main className="flex-1 overflow-y-auto chat-scroll  chat-scroll p-6">
                     {tasks.length === 0 ? (
                          <div className="h-full flex items-center justify-center">
                               <div className="text-center max-w-md">

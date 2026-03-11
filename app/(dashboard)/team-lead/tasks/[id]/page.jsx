@@ -202,7 +202,7 @@ const TaskDetailPage = ({ params }) => {
                <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
 
                     {/* LEFT COLUMN: Task Details */}
-                    <main className="flex-1 overflow-y-auto p-8 chat-scroll">
+                    <main className="flex-1 overflow-y-auto chat-scroll  p-8 chat-scroll">
                          <div className="max-w-4xl mx-auto space-y-10">
 
                               {/* Title & Metadata */}
@@ -359,7 +359,7 @@ const TaskDetailPage = ({ params }) => {
                     </main>
 
                     {/* RIGHT SIDEBAR: Actions & Metadata */}
-                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto">
+                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto chat-scroll ">
 
                          {/* Status Control */}
                          <div className="space-y-4">

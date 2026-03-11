@@ -598,7 +598,7 @@ const ApprovalCard = ({
                                    {task.comments && task.comments.length > 0 && (
                                         <div>
                                              <h4 className="text-ui font-bold text-text-primary mb-3">Recent Comments</h4>
-                                             <div className="space-y-3 max-h-40 overflow-y-auto pr-2">
+                                             <div className="space-y-3 max-h-40 overflow-y-auto chat-scroll  pr-2">
                                                   {task.comments.slice(0, 3).map((comment) => (
                                                        <div key={comment.id} className="bg-bg-subtle p-3 rounded-lg">
                                                             <div className="flex justify-between items-center mb-1">

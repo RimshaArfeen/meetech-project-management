@@ -1,10 +1,9 @@
 
 // app/(dashboard)/project-manager/page.js
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
      Plus,
-     LayoutDashboard,
      Briefcase,
      Users,
      Calendar,
@@ -17,33 +16,276 @@ import {
      ChevronRight,
      TrendingUp,
      Clock,
-     UserPlus
+     UserPlus,
+     Download,
+     Filter,
+     X,
+     Send,
+     Star,
+     LogOut
 } from 'lucide-react';
+import { useProjectManager } from '../../../hooks/useProjectManager';
+import { useRouter } from 'next/navigation';
+import { formatDistanceToNow, format } from 'date-fns';
+import Swal from 'sweetalert2';
 
-const App = () => {
-     const [activeTab, setActiveTab] = useState('overview');
+const ProjectManagerDashboard = () => {
+     const router = useRouter();
+     const {
+          projects,
+          stats,
+          recentDocuments,
+          recentFeedback,
+          upcomingMilestones,
+          projectsWithoutLead,
+          teamLeads,
+          loading,
+          error,
+          createProject,
+          assignTeamLead,
+          uploadDocument,
+          recordFeedback,
+          generateReport,
+          refetch
+     } = useProjectManager();
+
+     console.log("Team Leads", teamLeads);
+
+     console.log("Projects", projects);
      const [showCreateModal, setShowCreateModal] = useState(false);
+     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+     const [showDocumentModal, setShowDocumentModal] = useState(false);
+     const [selectedProject, setSelectedProject] = useState(null);
+     const [formData, setFormData] = useState({
+          name: '',
+          description: '',
+          deadline: '',
+          priority: 'MEDIUM',
+          teamLeadId: '',
+          clientName: '',
+          clientEmail: '',
+          clientCompany: '',
+          clientPhone: '',
+          budget: ''
+     });
+     const [feedbackData, setFeedbackData] = useState({
+          content: '',
+          stage: 'review',
+          status: 'PENDING',
+          rating: 5,
+          isApproved: false
+     });
+     const [uploading, setUploading] = useState(false);
+     const [formErrors, setFormErrors] = useState({});
 
+     // Handle input change
+     const handleInputChange = (e) => {
+          const { name, value } = e.target;
+          setFormData(prev => ({ ...prev, [name]: value }));
+          if (formErrors[name]) {
+               setFormErrors(prev => ({ ...prev, [name]: null }));
+          }
+     };
 
-     // <button
-     //      // onClick={handleLogout}
-     //      disabled={isLoading}
-     //      className={`flex items-center gap-2 px-4 py-2 bg-red-700 text-text-inverse rounded-xl font-medium hover:bg-red-800 transition-all shadow-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-     // >
-     //      <LogOut size={18} />
-     //      <span>{isLoading ? 'Logging out...' : 'Logout'}</span>
-     // </button>
-     // Mock data for the dashboard
-     const projects = [
-          { id: 1, name: 'Cloud Migration Phase 2', status: 'In Progress', progress: 65, teamLead: 'Sarah Chen', deadline: '2024-05-15', health: 'On Track' },
-          { id: 2, name: 'AI Integration Suite', status: 'Planning', progress: 12, teamLead: 'Marcus Rodriguez', deadline: '2024-06-01', health: 'Delayed' },
-          { id: 3, name: 'Q3 Security Audit', status: 'Review', progress: 90, teamLead: 'Alex Kim', deadline: '2024-04-30', health: 'On Track' },
-     ];
+     // Validate form
+     const validateForm = () => {
+          const errors = {};
+
+          if (!formData.name.trim()) {
+               errors.name = 'Project name is required';
+          } else if (formData.name.length < 3) {
+               errors.name = 'Project name must be at least 3 characters';
+          }
+
+          if (!formData.clientName.trim()) {
+               errors.clientName = 'Client name is required';
+          }
+
+          if (!formData.clientEmail.trim()) {
+               errors.clientEmail = 'Client email is required';
+          } else if (!/\S+@\S+\.\S+/.test(formData.clientEmail)) {
+               errors.clientEmail = 'Invalid email format';
+          }
+
+          return errors;
+     };
+
+     // Handle create project
+     const handleCreateProject = async (e) => {
+          e.preventDefault();
+
+          const errors = validateForm();
+          if (Object.keys(errors).length > 0) {
+               setFormErrors(errors);
+               return;
+          }
+
+          const result = await createProject({
+               ...formData,
+               budget: formData.budget ? parseFloat(formData.budget) : undefined
+          });
+
+          if (result.success) {
+               setShowCreateModal(false);
+               setFormData({
+                    name: '',
+                    description: '',
+                    deadline: '',
+                    priority: 'MEDIUM',
+                    teamLeadId: '',
+                    clientName: '',
+                    clientEmail: '',
+                    clientCompany: '',
+                    clientPhone: '',
+                    budget: ''
+               });
+          }
+     };
+
+     // Handle assign team lead
+     const handleAssignTeamLead = async (projectId) => {
+          const { value: teamLeadId } = await Swal.fire({
+               title: 'Assign Team Lead',
+               input: 'select',
+               inputOptions: teamLeads.reduce((acc, tl) => {
+                    acc[tl.id] = `${tl.name} (${tl._count.projectsLed} active projects)`;
+                    return acc;
+               }, {}),
+               inputPlaceholder: 'Select a team lead',
+               showCancelButton: true,
+               confirmButtonColor: '#2563eb',
+               cancelButtonColor: '#6b7280',
+               confirmButtonText: 'Assign',
+               preConfirm: (value) => {
+                    if (!value) {
+                         Swal.showValidationMessage('Please select a team lead');
+                    }
+                    return value;
+               }
+          });
+
+          if (teamLeadId) {
+               await assignTeamLead(projectId, teamLeadId);
+          }
+     };
+
+     // Handle document upload
+     const handleDocumentUpload = async (e, projectId) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const { value: documentType } = await Swal.fire({
+               title: 'Document Type',
+               input: 'select',
+               inputOptions: {
+                    CLIENT_REQUIREMENT: 'Client Requirements',
+                    PROJECT_DOC: 'Project Documentation',
+                    CONTRACT: 'Contract',
+                    OTHER: 'Other'
+               },
+               inputPlaceholder: 'Select document type',
+               showCancelButton: true,
+               confirmButtonColor: '#2563eb'
+          });
+
+          if (documentType) {
+               const { value: description } = await Swal.fire({
+                    title: 'Description',
+                    input: 'textarea',
+                    inputPlaceholder: 'Enter document description (optional)',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2563eb'
+               });
+
+               setUploading(true);
+               await uploadDocument(projectId, file, documentType, description);
+               setUploading(false);
+          }
+     };
+
+     // Handle record feedback
+     const handleRecordFeedback = async (project) => {
+          setSelectedProject(project);
+          setShowFeedbackModal(true);
+     };
+
+     // Handle submit feedback
+     const handleSubmitFeedback = async () => {
+          if (!feedbackData.content.trim()) {
+               Swal.fire({
+                    title: 'Error',
+                    text: 'Feedback content is required',
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c'
+               });
+               return;
+          }
+
+          await recordFeedback(selectedProject.id, feedbackData);
+          setShowFeedbackModal(false);
+          setFeedbackData({
+               content: '',
+               stage: 'review',
+               status: 'PENDING',
+               rating: 5,
+               isApproved: false
+          });
+     };
+
+     // Handle generate report
+     const handleGenerateReport = async (projectId) => {
+          const report = await generateReport(projectId);
+
+          if (report) {
+               // Create a downloadable file
+               const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+               const url = URL.createObjectURL(blob);
+               const a = document.createElement('a');
+               a.href = url;
+               a.download = `project-report-${projectId}-${new Date().toISOString().split('T')[0]}.json`;
+               a.click();
+
+               Swal.fire({
+                    title: 'Report Generated',
+                    text: 'Report has been downloaded',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+               });
+          }
+     };
+
+     // Handle logout
+     const handleLogout = async () => {
+          const result = await Swal.fire({
+               title: 'Are you sure?',
+               text: 'You will be logged out of your session',
+               icon: 'warning',
+               showCancelButton: true,
+               confirmButtonColor: '#b91c1c',
+               cancelButtonColor: '#6b7280',
+               confirmButtonText: 'Yes, logout'
+          });
+
+          if (result.isConfirmed) {
+               await fetch('/api/auth/logout', { method: 'POST' });
+               router.push('/login');
+          }
+     };
+
+     if (loading.dashboard && projects.length === 0) {
+          return (
+               <div className="min-h-screen bg-bg-page flex items-center justify-center">
+                    <div className="text-center">
+                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
+                         <p className="text-text-muted">Loading your dashboard...</p>
+                    </div>
+               </div>
+          );
+     }
 
      return (
           <div className="min-h-screen bg-bg-page text-text-body font-sans flex">
-
-
                {/* Main Content */}
                <main className="flex-1 flex flex-col min-w-0">
                     {/* Header */}
@@ -57,18 +299,61 @@ const App = () => {
                                    <Plus size={18} />
                                    <span>Create New Project</span>
                               </button>
+                              <button
+                                   onClick={handleLogout}
+                                   className="flex items-center gap-2 px-4 py-2 bg-red-700 text-text-inverse rounded-lg font-medium hover:bg-red-800 transition-all shadow-sm"
+                              >
+                                   <LogOut size={18} />
+                                   <span>Logout</span>
+                              </button>
                          </div>
                     </header>
 
+                    {/* Error Message */}
+                    {error && (
+                         <div className="mx-page-x mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                   <AlertCircle size={20} className="text-red-500" />
+                                   <p className="text-red-500 text-sm">{error}</p>
+                              </div>
+                              <button
+                                   onClick={() => refetch()}
+                                   className="text-red-500 hover:text-red-600 text-xs font-bold"
+                              >
+                                   Retry
+                              </button>
+                         </div>
+                    )}
+
                     {/* Dashboard Content */}
-                    <div className="p-page-y px-page-x space-y-8 overflow-y-auto">
+                    <div className="p-page-y px-page-x space-y-8 overflow-y-auto chat-scroll ">
 
                          {/* Quick Stats */}
                          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                              <StatCard label="Active Projects" value="12" icon={<Briefcase className="text-accent" />} trend="+2 this month" />
-                              <StatCard label="Total Milestones" value="48" icon={<CheckCircle2 className="text-accent-secondary" />} trend="85% completion" />
-                              <StatCard label="Pending Approvals" value="07" icon={<MessageSquare className="text-amber-500" />} trend="3 urgent" />
-                              <StatCard label="Deadlines Hit" value="94%" icon={<TrendingUp className="text-emerald-500" />} trend="High performance" />
+                              <StatCard
+                                   label="Active Projects"
+                                   value={stats.activeProjects}
+                                   icon={<Briefcase className="text-accent" />}
+                                   trend={`${projects.length} total`}
+                              />
+                              <StatCard
+                                   label="Total Milestones"
+                                   value={stats.totalMilestones}
+                                   icon={<CheckCircle2 className="text-accent-secondary" />}
+                                   trend={`${stats.completionRate}% complete`}
+                              />
+                              <StatCard
+                                   label="Pending Approvals"
+                                   value={stats.pendingApprovals}
+                                   icon={<MessageSquare className="text-amber-500" />}
+                                   trend={`${projectsWithoutLead.length} need leads`}
+                              />
+                              <StatCard
+                                   label="Deadlines Hit"
+                                   value={`${stats.deadlinesHit}%`}
+                                   icon={<TrendingUp className="text-emerald-500" />}
+                                   trend="High performance"
+                              />
                          </section>
 
                          {/* Main Grid */}
@@ -80,12 +365,25 @@ const App = () => {
                                         <h2 className="text-subheading font-bold text-text-primary flex items-center gap-2">
                                              Ongoing Projects <span className="text-xs font-normal px-2 py-0.5 bg-accent-muted text-accent rounded-full">{projects.length}</span>
                                         </h2>
-                                        <button className="text-ui text-accent font-medium hover:underline">View All</button>
+                                        <button
+                                             onClick={() => router.push('/project-manager/projects')}
+                                             className="text-ui text-accent font-medium hover:underline"
+                                        >
+                                             View All
+                                        </button>
                                    </div>
 
                                    <div className="space-y-4">
-                                        {projects.map((project) => (
-                                             <ProjectRow key={project.id} project={project} />
+                                        {projects.slice(0, 5).map((project) => (
+                                             <ProjectRow
+                                                  key={project.id}
+                                                  project={project}
+                                                  onAssignLead={() => handleAssignTeamLead(project.id)}
+                                                  onUploadDoc={(e) => handleDocumentUpload(e, project.id)}
+                                                  onAddFeedback={() => handleRecordFeedback(project)}
+                                                  onGenerateReport={() => handleGenerateReport(project.id)}
+                                                  uploading={uploading}
+                                             />
                                         ))}
                                    </div>
 
@@ -96,9 +394,21 @@ const App = () => {
                                              Upcoming Milestones
                                         </h3>
                                         <div className="space-y-3">
-                                             <MilestoneItem title="UI/UX Prototype Approval" project="AI Integration Suite" date="Apr 24" status="urgent" />
-                                             <MilestoneItem title="API Documentation Review" project="Cloud Migration" date="Apr 26" status="normal" />
-                                             <MilestoneItem title="Client Feedback Integration" project="Security Audit" date="May 02" status="normal" />
+                                             {upcomingMilestones.length > 0 ? (
+                                                  upcomingMilestones.map((milestone) => (
+                                                       <MilestoneItem
+                                                            key={milestone.id}
+                                                            title={milestone.name}
+                                                            project={milestone.project.name}
+                                                            date={format(new Date(milestone.deadline), 'MMM dd')}
+                                                            status={milestone.isDelayed ? 'urgent' : 'normal'}
+                                                       />
+                                                  ))
+                                             ) : (
+                                                  <p className="text-sm text-text-muted text-center py-4">
+                                                       No upcoming milestones
+                                                  </p>
+                                             )}
                                         </div>
                                    </div>
                               </div>
@@ -112,11 +422,25 @@ const App = () => {
                                              Assign Team Leads
                                         </h3>
                                         <div className="space-y-4">
-                                             <p className="text-xs text-text-muted mb-2">Projects waiting for lead assignment:</p>
-                                             <div className="p-3 bg-bg-subtle border border-border-subtle rounded-lg flex items-center justify-between">
-                                                  <span className="text-sm font-medium">Retail App Redesign</span>
-                                                  <button className="text-xs bg-accent text-text-inverse px-3 py-1.5 rounded-md hover:bg-accent-hover transition-colors">Assign</button>
-                                             </div>
+                                             <p className="text-xs text-text-muted mb-2">
+                                                  Projects waiting for lead assignment: {projectsWithoutLead.length}
+                                             </p>
+                                             {projectsWithoutLead.slice(0, 3).map((project) => (
+                                                  <div key={project.id} className="p-3 bg-bg-subtle border border-border-subtle rounded-lg flex items-center justify-between">
+                                                       <span className="text-sm font-medium">{project.name}</span>
+                                                       <button
+                                                            onClick={() => handleAssignTeamLead(project.id)}
+                                                            className="text-xs bg-accent text-text-inverse px-3 py-1.5 rounded-md hover:bg-accent-hover transition-colors"
+                                                       >
+                                                            Assign
+                                                       </button>
+                                                  </div>
+                                             ))}
+                                             {projectsWithoutLead.length === 0 && (
+                                                  <p className="text-sm text-green-600 text-center py-2">
+                                                       All projects have leads assigned ✓
+                                                  </p>
+                                             )}
                                         </div>
                                    </div>
 
@@ -127,12 +451,37 @@ const App = () => {
                                                   <Upload size={18} className="text-accent" />
                                                   Client Documents
                                              </h3>
-                                             <button className="p-1 hover:bg-bg-subtle rounded"><Plus size={16} /></button>
+                                             <label className="cursor-pointer">
+                                                  <input
+                                                       type="file"
+                                                       className="hidden"
+                                                       onChange={(e) => {
+                                                            if (projects.length > 0) {
+                                                                 handleDocumentUpload(e, projects[0].id);
+                                                            }
+                                                       }}
+                                                  />
+                                                  <button className="p-1 hover:bg-bg-subtle rounded">
+                                                       <Plus size={16} />
+                                                  </button>
+                                             </label>
                                         </div>
                                         <div className="space-y-3">
-                                             <DocItem name="Requirements_V2.pdf" size="2.4 MB" date="2h ago" />
-                                             <DocItem name="Brand_Guidelines.zip" size="14.8 MB" date="Yesterday" />
-                                             <DocItem name="Contract_Signed.pdf" size="1.1 MB" date="3 days ago" />
+                                             {recentDocuments.length > 0 ? (
+                                                  recentDocuments.map((doc) => (
+                                                       <DocItem
+                                                            key={doc.id}
+                                                            name={doc.name}
+                                                            size={`${(doc.fileSize / 1024 / 1024).toFixed(1)} MB`}
+                                                            date={formatDistanceToNow(new Date(doc.uploadedAt), { addSuffix: true })}
+                                                            project={doc.project?.name}
+                                                       />
+                                                  ))
+                                             ) : (
+                                                  <p className="text-sm text-text-muted text-center py-4">
+                                                       No documents uploaded yet
+                                                  </p>
+                                             )}
                                         </div>
                                    </div>
 
@@ -143,14 +492,35 @@ const App = () => {
                                              Recent Feedback
                                         </h3>
                                         <div className="space-y-4">
-                                             <div className="border-l-2 border-accent pl-3 py-1">
-                                                  <p className="text-xs font-semibold text-text-primary">"The dashboard colors need to be more enterprise-focused."</p>
-                                                  <p className="text-[10px] text-text-muted mt-1">— Acme Corp, 4h ago</p>
-                                             </div>
-                                             <div className="border-l-2 border-emerald-500 pl-3 py-1">
-                                                  <p className="text-xs font-semibold text-text-primary text-emerald-600">Approval Received: Milestone 1</p>
-                                                  <p className="text-[10px] text-text-muted mt-1">— Global Logistics, Yesterday</p>
-                                             </div>
+                                             {recentFeedback.length > 0 ? (
+                                                  recentFeedback.map((feedback) => (
+                                                       <div key={feedback.id} className={`border-l-2 pl-3 py-1 ${feedback.isApproved ? 'border-emerald-500' :
+                                                            feedback.status === 'REJECTED' ? 'border-red-500' : 'border-accent'
+                                                            }`}>
+                                                            <p className="text-xs font-semibold text-text-primary line-clamp-2">
+                                                                 "{feedback.content}"
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                 <span className="text-[10px] text-text-muted">
+                                                                      {feedback.project?.clientName || feedback.project?.name}
+                                                                 </span>
+                                                                 <span className="text-[8px] text-text-disabled">•</span>
+                                                                 <span className="text-[10px] text-text-muted">
+                                                                      {formatDistanceToNow(new Date(feedback.createdAt), { addSuffix: true })}
+                                                                 </span>
+                                                                 {feedback.isApproved && (
+                                                                      <span className="text-[8px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+                                                                           Approved
+                                                                      </span>
+                                                                 )}
+                                                            </div>
+                                                       </div>
+                                                  ))
+                                             ) : (
+                                                  <p className="text-sm text-text-muted text-center py-4">
+                                                       No feedback recorded yet
+                                                  </p>
+                                             )}
                                         </div>
                                    </div>
                               </div>
@@ -159,52 +529,314 @@ const App = () => {
                     </div>
                </main>
 
-               {/* Simplified Create Project Modal Overlay */}
+               {/* Create Project Modal */}
                {showCreateModal && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                         <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-2xl border border-border-default overflow-hidden animate-in fade-in zoom-in duration-200">
+                         <div className="bg-bg-surface w-full max-w-2xl rounded-2xl shadow-2xl border border-border-default  animate-in fade-in zoom-in duration-200 h-[90vh]">
                               <div className="p-6 border-b border-border-default flex justify-between items-center bg-bg-subtle">
                                    <h2 className="text-headline font-bold text-text-primary">Define New Project</h2>
                                    <button onClick={() => setShowCreateModal(false)} className="text-text-muted hover:text-text-primary">
-                                        <Plus className="rotate-45" />
+                                        <X size={20} />
                                    </button>
                               </div>
-                              <div className="p-8 space-y-6">
+
+                              <form onSubmit={handleCreateProject} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto chat-scroll  chat-scroll text-sm">
+                                   {/* Basic Info */}
                                    <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Project Name</label>
-                                             <input type="text" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none" placeholder="e.g. Q4 Growth Campaign" />
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Project Name <span className="text-red-500">*</span>
+                                             </label>
+                                             <input
+                                                  type="text"
+                                                  name="name"
+                                                  value={formData.name}
+                                                  onChange={handleInputChange}
+                                                  className={`w-full p-3 bg-bg-subtle border rounded-lg focus:ring-1 focus:ring-accent outline-none ${formErrors.name ? 'border-red-500' : 'border-border-default'
+                                                       }`}
+                                                  placeholder="e.g. Q4 Growth Campaign"
+                                             />
+                                             {formErrors.name && (
+                                                  <p className="text-xs text-red-500">{formErrors.name}</p>
+                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Target Deadline</label>
-                                             <input type="date" className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none" />
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Target Deadline
+                                             </label>
+                                             <input
+                                                  type="date"
+                                                  name="deadline"
+                                                  value={formData.deadline}
+                                                  onChange={handleInputChange}
+                                                  min={new Date().toISOString().split('T')[0]}
+                                                  className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             />
                                         </div>
                                    </div>
+
+                                   {/* Description */}
                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Project Scope</label>
-                                        <textarea className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg h-24 focus:ring-1 focus:ring-accent outline-none" placeholder="Describe the key deliverables..." />
+                                        <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                             Project Scope
+                                        </label>
+                                        <textarea
+                                             name="description"
+                                             value={formData.description}
+                                             onChange={handleInputChange}
+                                             className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg h-24 focus:ring-1 focus:ring-accent outline-none"
+                                             placeholder="Describe the key deliverables..."
+                                        />
                                    </div>
-                                   <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Assign Lead</label>
-                                             <select className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none appearance-none">
-                                                  <option>Select a Team Lead</option>
-                                                  <option>Sarah Chen</option>
-                                                  <option>Marcus Rodriguez</option>
-                                             </select>
-                                        </div>
-                                        <div className="space-y-2">
-                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Priority</label>
-                                             <div className="flex gap-2">
-                                                  <button className="flex-1 py-3 border border-border-default rounded-lg hover:bg-accent-muted hover:text-accent transition-colors">Low</button>
-                                                  <button className="flex-1 py-3 border border-accent bg-accent-muted text-accent rounded-lg font-bold">High</button>
+
+                                   {/* Client Info */}
+                                   <div className="border-t border-border-subtle pt-4">
+                                        <h3 className="text-sm font-bold text-text-primary mb-4">Client Information</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                             <div className="space-y-2">
+                                                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                       Client Name <span className="text-red-500">*</span>
+                                                  </label>
+                                                  <input
+                                                       type="text"
+                                                       name="clientName"
+                                                       value={formData.clientName}
+                                                       onChange={handleInputChange}
+                                                       className={`w-full p-3 bg-bg-subtle border rounded-lg focus:ring-1 focus:ring-accent outline-none ${formErrors.clientName ? 'border-red-500' : 'border-border-default'
+                                                            }`}
+                                                       placeholder="e.g. Acme Corporation"
+                                                  />
+                                                  {formErrors.clientName && (
+                                                       <p className="text-xs text-red-500">{formErrors.clientName}</p>
+                                                  )}
+                                             </div>
+                                             <div className="space-y-2">
+                                                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                       Client Email <span className="text-red-500">*</span>
+                                                  </label>
+                                                  <input
+                                                       type="email"
+                                                       name="clientEmail"
+                                                       value={formData.clientEmail}
+                                                       onChange={handleInputChange}
+                                                       className={`w-full p-3 bg-bg-subtle border rounded-lg focus:ring-1 focus:ring-accent outline-none ${formErrors.clientEmail ? 'border-red-500' : 'border-border-default'
+                                                            }`}
+                                                       placeholder="client@company.com"
+                                                  />
+                                                  {formErrors.clientEmail && (
+                                                       <p className="text-xs text-red-500">{formErrors.clientEmail}</p>
+                                                  )}
+                                             </div>
+                                             <div className="space-y-2">
+                                                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                       Company
+                                                  </label>
+                                                  <input
+                                                       type="text"
+                                                       name="clientCompany"
+                                                       value={formData.clientCompany}
+                                                       onChange={handleInputChange}
+                                                       className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                                       placeholder="Optional"
+                                                  />
+                                             </div>
+                                             <div className="space-y-2">
+                                                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                       Phone
+                                                  </label>
+                                                  <input
+                                                       type="tel"
+                                                       name="clientPhone"
+                                                       value={formData.clientPhone}
+                                                       onChange={handleInputChange}
+                                                       className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                                       placeholder="Optional"
+                                                  />
                                              </div>
                                         </div>
                                    </div>
-                              </div>
+
+                                   {/* Assignment & Priority */}
+                                   <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Assign Lead
+                                             </label>
+                                             <select
+                                                  name="teamLeadId"
+                                                  value={formData.teamLeadId}
+                                                  onChange={handleInputChange}
+                                                  className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none appearance-none"
+                                             >
+                                                  <option value="">Select a Team Lead</option>
+                                                  {teamLeads.map(tl => (
+                                                       <option key={tl.id} value={tl.id}>
+                                                            {tl.name} ({tl._count.projectsLed} active)
+                                                       </option>
+                                                  ))}
+                                             </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Priority
+                                             </label>
+                                             <select
+                                                  name="priority"
+                                                  value={formData.priority}
+                                                  onChange={handleInputChange}
+                                                  className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             >
+                                                  <option value="LOW">Low</option>
+                                                  <option value="MEDIUM">Medium</option>
+                                                  <option value="HIGH">High</option>
+                                                  <option value="CRITICAL">Critical</option>
+                                             </select>
+                                        </div>
+                                   </div>
+
+                                   {/* Budget */}
+                                   <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                             Budget (Optional)
+                                        </label>
+                                        <input
+                                             type="number"
+                                             name="budget"
+                                             value={formData.budget}
+                                             onChange={handleInputChange}
+                                             min="0"
+                                             step="1000"
+                                             className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             placeholder="e.g. 50000"
+                                        />
+                                   </div>
+                              </form>
+
                               <div className="p-6 bg-bg-subtle border-t border-border-default flex justify-end gap-3">
-                                   <button onClick={() => setShowCreateModal(false)} className="px-6 py-2 rounded-lg font-medium text-text-body hover:bg-border-default">Cancel</button>
-                                   <button className="px-6 py-2 rounded-lg font-medium bg-accent text-text-inverse hover:bg-accent-hover shadow-lg">Launch Project</button>
+                                   <button
+                                        onClick={() => setShowCreateModal(false)}
+                                        className="px-6 py-2 rounded-lg font-medium text-text-body hover:bg-border-default"
+                                   >
+                                        Cancel
+                                   </button>
+                                   <button
+                                        onClick={handleCreateProject}
+                                        disabled={loading.createProject}
+                                        className="px-6 py-2 rounded-lg font-medium bg-accent text-text-inverse hover:bg-accent-hover shadow-lg disabled:opacity-50 flex items-center gap-2"
+                                   >
+                                        {loading.createProject ? (
+                                             <>
+                                                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                  Creating...
+                                             </>
+                                        ) : (
+                                             'Launch Project'
+                                        )}
+                                   </button>
+                              </div>
+                         </div>
+                    </div>
+               )}
+
+               {/* Feedback Modal */}
+               {showFeedbackModal && selectedProject && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                         <div className="bg-bg-surface w-full max-w-lg rounded-2xl shadow-2xl border border-border-default overflow-hidden">
+                              <div className="p-6 border-b border-border-default flex justify-between items-center">
+                                   <h2 className="text-headline font-bold text-text-primary">
+                                        Record Feedback - {selectedProject.name}
+                                   </h2>
+                                   <button onClick={() => setShowFeedbackModal(false)} className="text-text-muted hover:text-text-primary">
+                                        <X size={20} />
+                                   </button>
+                              </div>
+
+                              <div className="p-6 space-y-4">
+                                   <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                             Stage
+                                        </label>
+                                        <select
+                                             value={feedbackData.stage}
+                                             onChange={(e) => setFeedbackData(prev => ({ ...prev, stage: e.target.value }))}
+                                             className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                        >
+                                             <option value="initial">Initial Review</option>
+                                             <option value="review">Progress Review</option>
+                                             <option value="revision">Revision</option>
+                                             <option value="approval">Final Approval</option>
+                                        </select>
+                                   </div>
+
+                                   <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                             Feedback
+                                        </label>
+                                        <textarea
+                                             value={feedbackData.content}
+                                             onChange={(e) => setFeedbackData(prev => ({ ...prev, content: e.target.value }))}
+                                             rows="4"
+                                             className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             placeholder="Enter client feedback..."
+                                        />
+                                   </div>
+
+                                   <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Rating
+                                             </label>
+                                             <select
+                                                  value={feedbackData.rating}
+                                                  onChange={(e) => setFeedbackData(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
+                                                  className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             >
+                                                  {[1, 2, 3, 4, 5].map(r => (
+                                                       <option key={r} value={r}>{r} Star{r !== 1 ? 's' : ''}</option>
+                                                  ))}
+                                             </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                             <label className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                                                  Status
+                                             </label>
+                                             <select
+                                                  value={feedbackData.status}
+                                                  onChange={(e) => setFeedbackData(prev => ({ ...prev, status: e.target.value, isApproved: e.target.value === 'APPROVED' }))}
+                                                  className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                                             >
+                                                  <option value="PENDING">Pending</option>
+                                                  <option value="APPROVED">Approved</option>
+                                                  <option value="REJECTED">Rejected</option>
+                                                  <option value="REVISION_REQUESTED">Revision Requested</option>
+                                             </select>
+                                        </div>
+                                   </div>
+
+                                   {feedbackData.status === 'APPROVED' && (
+                                        <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                             <p className="text-sm text-green-600 flex items-center gap-2">
+                                                  <CheckCircle2 size={16} />
+                                                  This will mark the project as completed if it's the final approval stage.
+                                             </p>
+                                        </div>
+                                   )}
+                              </div>
+
+                              <div className="p-6 bg-bg-subtle border-t border-border-default flex justify-end gap-3">
+                                   <button
+                                        onClick={() => setShowFeedbackModal(false)}
+                                        className="px-6 py-2 rounded-lg font-medium text-text-body hover:bg-border-default"
+                                   >
+                                        Cancel
+                                   </button>
+                                   <button
+                                        onClick={handleSubmitFeedback}
+                                        className="px-6 py-2 rounded-lg font-medium bg-accent text-text-inverse hover:bg-accent-hover shadow-lg flex items-center gap-2"
+                                   >
+                                        <Send size={16} />
+                                        Save Feedback
+                                   </button>
                               </div>
                          </div>
                     </div>
@@ -214,17 +846,6 @@ const App = () => {
 };
 
 // UI Components
-const NavItem = ({ icon, label, active, onClick }) => (
-     <button
-          onClick={onClick}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-ui transition-all ${active ? 'bg-accent text-text-inverse shadow-md' : 'text-text-muted hover:bg-bg-subtle hover:text-text-primary'
-               }`}
-     >
-          {icon}
-          <span className="font-medium">{label}</span>
-     </button>
-);
-
 const StatCard = ({ label, value, icon, trend }) => (
      <div className="bg-bg-surface border border-border-default p-5 rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-4">
@@ -238,44 +859,115 @@ const StatCard = ({ label, value, icon, trend }) => (
      </div>
 );
 
-const ProjectRow = ({ project }) => (
-     <div className="group bg-bg-surface border border-border-default p-4 rounded-xl hover:shadow-md hover:border-accent transition-all cursor-pointer">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-               <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                         <h4 className="font-bold text-text-primary group-hover:text-accent transition-colors">{project.name}</h4>
-                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${project.health === 'On Track' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                              }`}>
-                              {project.health}
-                         </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-text-muted">
-                         <span className="flex items-center gap-1"><Users size={12} /> {project.teamLead}</span>
-                         <span className="flex items-center gap-1"><Calendar size={12} /> {project.deadline}</span>
-                    </div>
-               </div>
+const ProjectRow = ({ project, onAssignLead, onUploadDoc, onAddFeedback, onGenerateReport, uploading }) => {
+     const router = useRouter();
 
-               <div className="w-full md:w-48">
-                    <div className="flex justify-between text-[10px] font-bold text-text-muted mb-1 uppercase tracking-tighter">
-                         <span>Progress</span>
-                         <span>{project.progress}%</span>
-                    </div>
-                    <div className="h-2 bg-bg-subtle rounded-full overflow-hidden border border-border-subtle">
-                         <div
-                              className={`h-full transition-all duration-500 rounded-full ${project.health === 'On Track' ? 'bg-accent' : 'bg-amber-500'}`}
-                              style={{ width: `${project.progress}%` }}
-                         />
-                    </div>
-               </div>
+     const getHealthColor = (project) => {
+          if (project.isDelayed) return 'bg-red-100 text-red-700';
+          if (project.riskLevel === 'HIGH') return 'bg-amber-100 text-amber-700';
+          return 'bg-emerald-100 text-emerald-700';
+     };
 
-               <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted hover:text-accent"><AlertCircle size={18} /></button>
-                    <button className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted"><MoreVertical size={18} /></button>
-                    <ChevronRight size={18} className="text-border-strong group-hover:text-accent" />
+     const getHealthText = (project) => {
+          if (project.isDelayed) return 'Delayed';
+          if (project.riskLevel === 'HIGH') return 'At Risk';
+          if (project.status === 'COMPLETED') return 'Completed';
+          if (project.status === 'CLIENT_REVIEW') return 'In Review';
+          return 'On Track';
+     };
+
+     return (
+          <div
+               onClick={() => router.push(`/project-manager/projects/${project.id}`)}
+               className="group bg-bg-surface border border-border-default p-4 rounded-xl hover:shadow-md hover:border-accent transition-all cursor-pointer"
+          >
+               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex-1">
+                         <div className="flex items-center gap-3 mb-1">
+                              <h4 className="font-bold text-text-primary group-hover:text-accent transition-colors">
+                                   {project.name}
+                              </h4>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${getHealthColor(project)}`}>
+                                   {getHealthText(project)}
+                              </span>
+                         </div>
+                         <div className="flex items-center gap-4 text-xs text-text-muted">
+                              <span className="flex items-center gap-1">
+                                   <Users size={12} />
+                                   {project.teamLead?.name || 'Unassigned'}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                   <Calendar size={12} />
+                                   {project.deadline ? format(new Date(project.deadline), 'MMM dd, yyyy') : 'No deadline'}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                   <CheckCircle2 size={12} />
+                                   {project.milestonesCount} milestones
+                              </span>
+                         </div>
+                    </div>
+
+                    <div className="w-full md:w-48">
+                         <div className="flex justify-between text-[10px] font-bold text-text-muted mb-1 uppercase tracking-tighter">
+                              <span>Progress</span>
+                              <span>{project.progress}%</span>
+                         </div>
+                         <div className="h-2 bg-bg-subtle rounded-full overflow-hidden border border-border-subtle">
+                              <div
+                                   className={`h-full transition-all duration-500 rounded-full ${project.isDelayed ? 'bg-amber-500' : 'bg-accent'
+                                        }`}
+                                   style={{ width: `${project.progress}%` }}
+                              />
+                         </div>
+                    </div>
+
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                         {!project.teamLeadId && (
+                              <button
+                                   onClick={onAssignLead}
+                                   className="p-2 hover:bg-accent/10 rounded-lg text-accent"
+                                   title="Assign Team Lead"
+                              >
+                                   <UserPlus size={18} />
+                              </button>
+                         )}
+                         <label className="cursor-pointer">
+                              <input
+                                   type="file"
+                                   className="hidden"
+                                   onChange={onUploadDoc}
+                                   disabled={uploading}
+                              />
+                              <button
+                                   className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted hover:text-accent"
+                                   title="Upload Document"
+                              >
+                                   <Upload size={18} />
+                              </button>
+                         </label>
+                         <button
+                              onClick={onAddFeedback}
+                              className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted hover:text-accent"
+                              title="Record Feedback"
+                         >
+                              <MessageSquare size={18} />
+                         </button>
+                         <button
+                              onClick={onGenerateReport}
+                              className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted hover:text-accent"
+                              title="Generate Report"
+                         >
+                              <Download size={18} />
+                         </button>
+                         <button className="p-2 hover:bg-bg-subtle rounded-lg text-text-muted">
+                              <MoreVertical size={18} />
+                         </button>
+                         <ChevronRight size={18} className="text-border-strong group-hover:text-accent" />
+                    </div>
                </div>
           </div>
-     </div>
-);
+     );
+};
 
 const MilestoneItem = ({ title, project, date, status }) => (
      <div className="flex items-center justify-between p-3 bg-bg-surface border border-border-subtle rounded-lg">
@@ -286,21 +978,27 @@ const MilestoneItem = ({ title, project, date, status }) => (
                     <p className="text-[10px] text-text-muted uppercase tracking-tight">{project}</p>
                </div>
           </div>
-          <span className={`text-xs font-bold ${status === 'urgent' ? 'text-red-600' : 'text-text-muted'}`}>{date}</span>
+          <span className={`text-xs font-bold ${status === 'urgent' ? 'text-red-600' : 'text-text-muted'}`}>
+               {date}
+          </span>
      </div>
 );
 
-const DocItem = ({ name, size, date }) => (
+const DocItem = ({ name, size, date, project }) => (
      <div className="flex items-center justify-between text-ui group hover:bg-bg-subtle p-2 rounded-lg transition-colors cursor-pointer">
           <div className="flex items-center gap-3">
                <FileText size={16} className="text-text-muted group-hover:text-accent" />
                <div>
                     <p className="text-sm font-medium text-text-body">{name}</p>
-                    <p className="text-[10px] text-text-disabled uppercase">{size} • {date}</p>
+                    <p className="text-[10px] text-text-disabled uppercase">
+                         {size} • {date} • {project}
+                    </p>
                </div>
           </div>
-          <button className="text-text-muted hover:text-accent"><MoreVertical size={14} /></button>
+          <button className="text-text-muted hover:text-accent">
+               <Download size={14} />
+          </button>
      </div>
 );
 
-export default App;
+export default ProjectManagerDashboard;

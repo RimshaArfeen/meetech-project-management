@@ -96,7 +96,7 @@ const BreakMilestoneModal = ({ onClose, onSuccess, projects, developers }) => {
 
      return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in">
-               <div className="bg-bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+               <div className="bg-bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto chat-scroll  shadow-2xl">
                     {/* Header */}
                     <div className="sticky top-0 bg-bg-surface border-b border-border-default p-6 flex items-center justify-between">
                          <div>

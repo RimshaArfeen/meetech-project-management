@@ -1,130 +1,26 @@
-// // components/layouts/Sidebar.js
-// 'use client';
-// import Link from 'next/link';
-// import { usePathname } from 'next/navigation';
-// import { FiHome, FiUsers, FiBriefcase, FiCheckSquare, FiSettings, FiUser } from 'react-icons/fi';
-// import {
-//      LayoutDashboard,
-//      Briefcase,
-//      FileText,
-//      User,
-//      ListTodo,
-// } from 'lucide-react';
-
-// export default function Sidebar({ userRole = '' }) { // Default role
-//      const pathname = usePathname();
-
-//      const menuItems = {
-//           CEO: [
-//                { name: 'Dashboard', icon: FiHome, path: '/ceo' },
-//                { name: 'Projects', icon: FiBriefcase, path: '/ceo/projects' },
-//                { name: 'Managers', icon: FiUsers, path: '/ceo/managers' },
-//                { name: 'Reports', icon: FiCheckSquare, path: '/ceo/reports' },
-//                { name: 'Settings', icon: FiSettings, path: '/ceo/settings' },
-//                { name: 'Profile', icon: FiUser, path: '/ceo/profile' }
-//           ],
-//           PROJECT_MANAGER: [
-//                { name: 'Dashboard', icon: FiHome, path: '/project-manager' },
-//                { name: 'My Projects', icon: FiBriefcase, path: '/project-manager/projects' },
-//                { name: 'Clients', icon: FiUsers, path: '/project-manager/clients' },
-//                { name: 'Reports', icon: FiCheckSquare, path: '/project-manager/reports' },
-//                { name: 'Profile', icon: FiUser, path: '/project-manager/profile' }
-//           ],
-//           TEAM_LEAD: [
-//                { name: 'Dashboard', icon: FiHome, path: '/team-lead' },
-//                { name: 'Projects', icon: FiBriefcase, path: '/team-lead/projects' },
-//                { name: 'Tasks Control', icon: FiCheckSquare, path: '/team-lead/tasks' },
-//                { name: 'My Developers', icon: FiUsers, path: '/team-lead/my-developers' },
-//                { name: 'Approvals', icon: FiCheckSquare, path: '/team-lead/approvals' },
-//                { name: 'Report Issues', icon: FiUsers, path: '/team-lead/report-issues' },
-//                { name: 'Profile', icon: FiUser, path: '/team-lead/profile' }
-//           ],
-//           DEVELOPER: [
-//                { name: 'Dashboard', icon: FiHome, path: '/developer' },
-//                { name: 'My Tasks', icon: FiCheckSquare, path: '/developer/tasks' },
-//                { name: 'Projects', icon: FiBriefcase, path: '/developer/projects' },
-//                { name: 'Profile', icon: FiUser, path: '/developer/profile' }
-//           ]
-//      };
-
-//      // Get role-specific menu items
-//      const roleMenuItems = menuItems[userRole] || [];
-
-//      // Navigation item component with active state
-//      const NavItem = ({ item }) => {
-//           const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
-//           const Icon = item.icon;
-
-//           return (
-//                <Link
-//                     href={item.path}
-//                     className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
-//                          ? 'bg-accent text-text-inverse'
-//                          : 'text-text-muted hover:bg-bg-subtle hover:text-text-primary'
-//                          }`}
-//                >
-//                     <Icon size={20} />
-//                     <span className="text-sm font-medium">{item.name}</span>
-//                </Link>
-//           );
-//      };
-
-//      // Determine user role display
-//      const getUserRoleDisplay = () => {
-//           const roleMap = {
-//                CEO: 'Chief Executive Officer',
-//                PROJECT_MANAGER: 'Project Manager',
-//                TEAM_LEAD: 'Team Lead',
-//                DEVELOPER: 'Developer'
-//           };
-//           return roleMap[userRole] || userRole;
-//      };
-
-//      return (
-//           <aside className="w-64 border-r border-border-default bg-bg-surface flex-shrink-0 hidden md:flex flex-col sticky top-0 h-screen">
-//                {/* Logo Section */}
-//                <div className="p-6">
-//                     <div className="flex items-center gap-2 text-accent font-bold text-xl">
-//                          <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-text-inverse">
-//                               <ListTodo size={20} />
-//                          </div>
-//                          <span className="tracking-tight text-text-primary">ProManage</span>
-//                     </div>
-//                </div>
-
-//                {/* Role-based Navigation Menu */}
-//                <nav className="flex-1 px-4 space-y-1">
-//                     {roleMenuItems.map((item, index) => (
-//                          <NavItem key={index} item={item} />
-//                     ))}
-//                </nav>
-
-//                {/* User Profile Section */}
-//                <div className="p-4 border-t border-border-default">
-//                     <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-bg-subtle transition-colors cursor-pointer">
-//                          <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent font-medium border border-accent/20">
-//                               EC
-//                          </div>
-//                          <div>
-//                               <p className="text-sm font-semibold text-text-primary">Emily Chen</p>
-//                               <p className="text-xs text-text-muted">{getUserRoleDisplay()}</p>
-//                          </div>
-//                     </div>
-//                </div>
-//           </aside>
-//      );
-// }
-
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiHome, FiUsers, FiBriefcase, FiCheckSquare, FiSettings, FiUser } from 'react-icons/fi';
-import { ListTodo } from 'lucide-react';
+import { FiHome, FiUsers, FiBriefcase, FiCheckSquare, FiSettings, FiUser, FiLogOut } from 'react-icons/fi';
+import {
+     LayoutDashboard,
+     Briefcase,
+     FileText,
+     User,
+     ListTodo,
+     ChevronRight,
+     Settings,
+     HelpCircle,
+     Bell
+} from 'lucide-react';
 import { useProfile } from '../../../hooks/useProfile';
+import Image from 'next/image';
+import { useState } from 'react';
 
 export default function Sidebar({ userRole = '' }) {
      const pathname = usePathname();
-     const { user, isLoading } = useProfile(); // Check if your hook provides a loading state
+     const { user, isLoading } = useProfile();
+     const [isCollapsed, setIsCollapsed] = useState(false);
      console.log("User Name:", user?.name || "Guest");
 
      const menuItems = {
@@ -169,14 +65,26 @@ export default function Sidebar({ userRole = '' }) {
           return (
                <Link
                     href={item.path}
-                    className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3 py-3 md:py-2 rounded-lg transition-colors ${isActive
-                         ? 'text-accent md:bg-accent md:text-text-inverse'
-                         : 'text-text-muted hover:text-accent md:hover:bg-bg-subtle'
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
+          ${isActive
+                              ? 'bg-gradient-to-r from-accent to-accent-hover text-white shadow-lg shadow-accent/25'
+                              : 'text-gray-400 hover:bg-bg-subtle hover:text-accent'
                          }`}
                >
-                    <Icon size={20} />
-                    {/* Hide text on mobile */}
-                    <span className="text-[10px] md:text-sm font-medium hidden md:block">{item.name}</span>
+                    {/* Active indicator */}
+                    {isActive && (
+                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                    )}
+
+                    <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                    <span className="text-sm font-medium">{item.name}</span>
+
+                    {/* Tooltip for collapsed state */}
+                    {isCollapsed && (
+                         <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50">
+                              {item.name}
+                         </div>
+                    )}
                </Link>
           );
      };
@@ -191,47 +99,110 @@ export default function Sidebar({ userRole = '' }) {
           return roleMap[userRole] || userRole;
      };
 
+     // Get user initials for avatar
+     const getUserInitials = () => {
+          if (!user?.name) return 'U';
+          return user.name
+               .split(' ')
+               .map(n => n[0])
+               .join('')
+               .toUpperCase()
+               .substring(0, 2);
+     };
+
      return (
-          // Mobile: Fixed bottom, Desktop: Sticky left
-          <aside className="fixed bottom-0 left-0 w-full z-50 bg-bg-surface border-t border-border-default 
-                            md:w-64 md:h-screen md:sticky md:top-0 md:border-r md:border-t-0 md:flex md:flex-col">
+          <>
+               {/* Desktop Sidebar */}
+               <aside
+                    className={`hidden md:flex md:flex-col bg-gradient-to-b from-bg-surface to-bg-card border-r border-border-default h-screen sticky top-0 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'
+                         }`}
+               >
+                    {/* Logo Section with Collapse Toggle */}
+                    <div className={`flex items-center justify-between p-6 border-b border-border-default ${isCollapsed ? 'px-4' : ''}`}>
+                         <Link href="/" className="flex items-center gap-3">
+                              <div className="relative w-10 h-10">
+                                   <img
+                                        src="/icon.png"
+                                        alt="ProManage Logo"
+                                        width={40}
+                                        height={40}
+                                        className="rounded-xl"
+                                        priority
+                                   />
+                              </div>
+                              {!isCollapsed && (
+                                   <span className="text-xl font-bold bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent">
+                                       Meetech
+                                   </span>
+                              )}
+                         </Link>
 
-               {/* Logo Section (Hidden on Mobile) */}
-               <div className="hidden md:block p-6">
-                    <div className="flex items-center gap-2 text-accent font-bold text-xl">
-                         <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-text-inverse">
-                              <ListTodo size={20} />
-                         </div>
-                         <span className="tracking-tight text-text-primary">ProManage</span>
+                         <button
+                              onClick={() => setIsCollapsed(!isCollapsed)}
+                              className="p-2 hover:bg-bg-subtle rounded-lg transition-colors text-gray-400 hover:text-accent"
+                         >
+                              <ChevronRight size={18} className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+                         </button>
                     </div>
-               </div>
 
-               {/* Role-based Navigation Menu (Horizontal on mobile, Vertical on desktop) */}
-               <nav className="flex-1 flex flex-row md:flex-col md:px-4 justify-around md:justify-start md:gap-y-2">
-                    {roleMenuItems.map((item, index) => (
-                         <NavItem key={index} item={item} />
-                    ))}
+                    {/* User Profile Quick Info */}
+                    <div className={`p-4 border-b border-border-default ${isCollapsed ? 'text-center' : ''}`}>
+                         <div className={`flex items-center gap-3 ${isCollapsed ? 'flex-col' : ''}`}>
+                              <div className="relative">
+                                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                        {getUserInitials()}
+                                   </div>
+                                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-bg-surface"></div>
+                              </div>
+
+                              {!isCollapsed && (
+                                   <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-text-primary truncate">{user?.name || 'Loading...'}</p>
+                                        <p className="text-xs text-text-muted truncate">{getUserRoleDisplay()}</p>
+                                   </div>
+                              )}
+                         </div>
+                    </div>
+
+                    {/* Navigation Menu */}
+                    <nav className="flex-1 chat-scroll overflow-y-auto py-6 px-3 space-y-1 scrollbar-thin scrollbar-thumb-border-default">
+                         {roleMenuItems.map((item, index) => (
+                              <NavItem key={index} item={item} />
+                         ))}
+                    </nav>
+
+                    {/* Bottom Actions */}
+                    {/* <div className="p-4 border-t border-border-default space-y-2">
+                        
+
+                         <button className={`flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-500/10 transition-all w-full ${isCollapsed ? 'justify-center' : ''}`}>
+                              <FiLogOut size={20} />
+                              {!isCollapsed && <span className="text-sm">Logout</span>}
+                         </button>
+                    </div> */}
+               </aside>
+
+               {/* Mobile Bottom Navigation */}
+               <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-bg-surface border-t border-border-default z-50 px-2 py-2">
+                    <div className="flex justify-around items-center">
+                         {roleMenuItems.slice(0, 5).map((item, index) => {
+                              const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                              const Icon = item.icon;
+
+                              return (
+                                   <Link
+                                        key={index}
+                                        href={item.path}
+                                        className={`flex flex-col items-center p-2 rounded-lg transition-colors ${isActive ? 'text-accent' : 'text-gray-400'
+                                             }`}
+                                   >
+                                        <Icon size={20} />
+                                        <span className="text-[10px] mt-1">{item.name}</span>
+                                   </Link>
+                              );
+                         })}
+                    </div>
                </nav>
-
-               {/* User Profile Section (Hidden on Mobile) */}
-               <div className="hidden md:block p-4 border-t border-border-default">
-                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-bg-subtle transition-colors cursor-pointer">
-                         <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent font-medium border border-accent/20">
-                              {
-                                   user?.name
-                                        ?.split(" ")
-                                        .map((n) => n[0])
-                                        .join("")
-                                        .toUpperCase()
-                                        .substring(0, 2)
-                              }
-                         </div>
-                         <div>
-                              <p className="text-sm font-semibold text-text-primary">{user?.name}</p>
-                              <p className="text-xs text-text-muted">{user?.role}</p>
-                         </div>
-                    </div>
-               </div>
-          </aside>
+          </>
      );
 }

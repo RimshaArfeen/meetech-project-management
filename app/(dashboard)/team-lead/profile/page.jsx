@@ -407,7 +407,7 @@ const ProfilePage = () => {
                               </div>
 
                               {/* Role badge */}
-                              <div className="hidden md:block px-4 py-2 bg-accent/10 rounded-2xl border border-accent/20">
+                              <div className="hidden lg:block px-4 py-2 bg-accent/10 rounded-2xl border border-accent/20">
                                    <p className="text-[10px] font-black text-accent uppercase tracking-widest">Role</p>
                                    <p className="text-sm font-bold text-text-primary">{user.role.replace('_', ' ')}</p>
                               </div>
