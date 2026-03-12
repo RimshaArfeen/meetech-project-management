@@ -17,29 +17,24 @@
   --font-secondary: var(--font-work-sans);
   color-scheme: light;
   /* Backgrounds & surfaces */
-  --bg-page: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-card: #eff6ff;
-  --bg-subtle: #f8fafc;
-  /* Borders / dividers */
-  --border-default: #e5e7eb;
-  --border-subtle: #e5e7eb;
-  --border-strong: #d1d5db;
-  /* Text */
-  --text-primary: #0f172a;
-  --text-body: #334155;
-  --text-muted: #64748b;
-  --text-disabled: #94a3b8;
-  --text-inverse: #ffffff;
-  /* Primary accent (Authority Blue) */
-  --accent-primary: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-active: #1e40af;
-  --accent-muted: #eff6ff;
-  /* Secondary accent (Calm Teal   limited use) */
-  --accent-secondary: #14b8a6;
-  /* Focus ring */
-  --focus-ring: #2563eb;
+      --bg-page: #020617;
+    --bg-surface: #020617;
+    --bg-card: #020617;
+    --bg-subtle: #020617;
+    --border-default: #1e293b;
+    --border-subtle: #1e293b;
+    --border-strong: #334155;
+    --text-primary: #f8fafc;
+    --text-body: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-disabled: #64748b;
+    --text-inverse: #ffffff;
+    --accent-primary: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-active: #1e40af;
+    --accent-muted: rgba(37, 99, 235, 0.15);
+    --accent-secondary: #14b8a6;
+    --focus-ring: #2563eb;
 }
 
 @media (prefers-color-scheme: light) {

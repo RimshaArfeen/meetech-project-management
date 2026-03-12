@@ -707,10 +707,10 @@ const MilestonesTab = ({ milestones, onCreateMilestone, onUpdateMilestone, onSel
                                         <div>
                                              <p className="text-xs text-text-muted mb-1">Progress</p>
                                              <div className="flex items-center gap-2">
-                                                  <div className="flex-1 h-2 bg-bg-subtle rounded-full overflow-hidden">
+                                                  <div className="flex-1 h-2 bg-bg-subtle rounded-full overflow-hidden border border-accent/30">
                                                        <div
                                                             className="h-full bg-accent"
-                                                            style={{ width: `${milestone.progress || 0}%` }}
+                                                            style={{ width: `${milestone.progress || 0.34}%` }}
                                                        />
                                                   </div>
                                                   <span className="text-sm font-medium">{milestone.progress || 0}%</span>
@@ -1385,9 +1385,29 @@ const TaskCreationModal = ({ isOpen, onClose, milestone, projectId, onTaskCreate
           title: '',
           description: '',
           priority: 'MEDIUM',
-          deadline: ''
+          deadline: '',
+          assigneeId: '' // Add assignee field
      });
+     const [teamMembers, setTeamMembers] = useState([]);
      const [submitting, setSubmitting] = useState(false);
+
+     useEffect(() => {
+          if (isOpen) {
+               fetchTeamMembers();
+          }
+     }, [isOpen]);
+
+     const fetchTeamMembers = async () => {
+          try {
+               const response = await fetch('/api/project-manager/team-members');
+               if (response.ok) {
+                    const data = await response.json();
+                    setTeamMembers(data.members || []);
+               }
+          } catch (error) {
+               console.error('Error fetching team members:', error);
+          }
+     };
 
      if (!isOpen) return null;
 
@@ -1404,12 +1424,30 @@ const TaskCreationModal = ({ isOpen, onClose, milestone, projectId, onTaskCreate
                     })
                });
 
-               if (!response.ok) throw new Error('Failed to create task');
+               const data = await response.json();
+
+               if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create task');
+               }
 
                await onTaskCreated();
                onClose();
+
+               Swal.fire({
+                    title: 'Success!',
+                    text: 'Task created successfully',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+               });
           } catch (err) {
                console.error('Error creating task:', err);
+               Swal.fire({
+                    title: 'Error',
+                    text: err.message,
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c'
+               });
           } finally {
                setSubmitting(false);
           }
@@ -1418,18 +1456,21 @@ const TaskCreationModal = ({ isOpen, onClose, milestone, projectId, onTaskCreate
      return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                <div className="bg-bg-surface rounded-2xl max-w-md w-full">
-                    <div className="p-6 border-b border-border-default">
+                    <div className="p-6 border-b border-border-default flex justify-between items-center">
                          <h3 className="text-lg font-bold text-text-primary">
                               Add Task to "{milestone.name}"
                          </h3>
+                         <button onClick={onClose} className="text-text-muted hover:text-text-primary">
+                              <X size={20} />
+                         </button>
                     </div>
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
                          <input
                               type="text"
-                              placeholder="Task Title"
+                              placeholder="Task Title *"
                               value={formData.title}
                               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg"
+                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
                               required
                          />
                          <textarea
@@ -1437,36 +1478,56 @@ const TaskCreationModal = ({ isOpen, onClose, milestone, projectId, onTaskCreate
                               value={formData.description}
                               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                               rows="3"
-                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg"
+                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
                          />
-                         <select
-                              value={formData.priority}
-                              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg"
-                         >
-                              <option value="LOW">Low Priority</option>
-                              <option value="MEDIUM">Medium Priority</option>
-                              <option value="HIGH">High Priority</option>
-                              <option value="URGENT">Urgent</option>
-                         </select>
-                         <input
-                              type="date"
-                              value={formData.deadline}
-                              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                              className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg"
-                         />
+
+                         <div className="grid grid-cols-2 gap-3">
+                              <select
+                                   value={formData.priority}
+                                   onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                                   className="p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                              >
+                                   <option value="LOW">Low Priority</option>
+                                   <option value="MEDIUM">Medium Priority</option>
+                                   <option value="HIGH">High Priority</option>
+                                   <option value="URGENT">Urgent</option>
+                              </select>
+
+                              <input
+                                   type="date"
+                                   value={formData.deadline}
+                                   onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                   className="p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                              />
+                         </div>
+
+                         {teamMembers.length > 0 && (
+                              <select
+                                   value={formData.assigneeId}
+                                   onChange={(e) => setFormData({ ...formData, assigneeId: e.target.value })}
+                                   className="w-full p-3 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none"
+                              >
+                                   <option value="">Assign to...</option>
+                                   {teamMembers.map(member => (
+                                        <option key={member.id} value={member.id}>
+                                             {member.name} ({member.role})
+                                        </option>
+                                   ))}
+                              </select>
+                         )}
+
                          <div className="flex gap-3 pt-4">
                               <button
                                    type="button"
                                    onClick={onClose}
-                                   className="flex-1 px-4 py-2 border border-border-default rounded-lg"
+                                   className="flex-1 px-4 py-2 border border-border-default rounded-lg hover:bg-bg-subtle transition-colors"
                               >
                                    Cancel
                               </button>
                               <button
                                    type="submit"
                                    disabled={submitting}
-                                   className="flex-1 px-4 py-2 bg-accent text-text-inverse rounded-lg"
+                                   className="flex-1 px-4 py-2 bg-accent text-text-inverse rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50"
                               >
                                    {submitting ? 'Creating...' : 'Create Task'}
                               </button>

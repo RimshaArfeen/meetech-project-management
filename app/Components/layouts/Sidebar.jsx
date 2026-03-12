@@ -16,6 +16,7 @@ import {
 import { useProfile } from '../../../hooks/useProfile';
 import Image from 'next/image';
 import { useState } from 'react';
+import Logo from '../../../public/icon.png';
 
 export default function Sidebar({ userRole = '' }) {
      const pathname = usePathname();
@@ -121,8 +122,8 @@ export default function Sidebar({ userRole = '' }) {
                     <div className={`flex items-center justify-between p-6 border-b border-border-default ${isCollapsed ? 'px-4' : ''}`}>
                          <Link href="/" className="flex items-center gap-3">
                               <div className="relative w-10 h-10">
-                                   <img
-                                        src="/icon.png"
+                                   <Image
+                                        src={Logo}
                                         alt="ProManage Logo"
                                         width={40}
                                         height={40}
@@ -171,15 +172,7 @@ export default function Sidebar({ userRole = '' }) {
                          ))}
                     </nav>
 
-                    {/* Bottom Actions */}
-                    {/* <div className="p-4 border-t border-border-default space-y-2">
-                        
-
-                         <button className={`flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-500/10 transition-all w-full ${isCollapsed ? 'justify-center' : ''}`}>
-                              <FiLogOut size={20} />
-                              {!isCollapsed && <span className="text-sm">Logout</span>}
-                         </button>
-                    </div> */}
+                   
                </aside>
 
                {/* Mobile Bottom Navigation */}

@@ -1,6 +1,7 @@
 
 
 // hooks/useProjectManager.js
+// For Projects
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -104,9 +105,13 @@ export function useProjectManager() {
      }, [router]);
 
      // Create new project
+     // In hooks/useProjectManager.js
+     // Update the createProject function:
+
      const createProject = useCallback(async (projectData) => {
           try {
                setLoading(prev => ({ ...prev, createProject: true }));
+               setError(null);
 
                const response = await fetch('/api/project-manager/projects', {
                     method: 'POST',
@@ -116,11 +121,23 @@ export function useProjectManager() {
                     body: JSON.stringify(projectData),
                });
 
-               const data = await response.json();
-
+               // Check if response is OK before trying to parse JSON
                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create project');
+                    // Try to get error message from response
+                    let errorMessage = 'Failed to create project';
+                    try {
+                         const errorData = await response.json();
+                         errorMessage = errorData.error || errorMessage;
+                    } catch {
+                         // If response is not JSON, use status text
+                         errorMessage = response.statusText || errorMessage;
+                    }
+                    throw new Error(errorMessage);
                }
+
+               // Check if response has content before parsing
+               const text = await response.text();
+               const data = text ? JSON.parse(text) : {};
 
                await Swal.fire({
                     title: 'Success!',
@@ -150,6 +167,7 @@ export function useProjectManager() {
           }
      }, [fetchDashboardData]);
 
+     
      // Assign team lead
      const assignTeamLead = useCallback(async (projectId, teamLeadId) => {
           try {

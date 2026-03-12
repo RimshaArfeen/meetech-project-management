@@ -141,9 +141,30 @@ import { NextResponse } from 'next/server';
 import { verifyAccessToken } from '../../../../lib/auth/jwt';
 import prisma from '../../../../lib/prisma';
 
-export async function GET(request, { params }) {
+
+async function refreshAccessToken(request) {
      try {
-          const { projectId } = await params;
+          const response = await fetch(new URL('/api/auth/refresh', request.url), {
+               method: 'POST',
+               headers: {
+                    Cookie: request.headers.get('cookie') || ''
+               }
+          });
+
+          if (response.ok) {
+               // Get the new cookies from the refresh response
+               const newCookies = response.headers.getSetCookie();
+               return { success: true, cookies: newCookies };
+          }
+          return { success: false };
+     } catch {
+          return { success: false };
+     }
+}
+
+// GET all projects for project manager
+export async function GET(request) {
+     try {
           const token = request.cookies.get('accessToken')?.value;
 
           if (!token) {
@@ -155,11 +176,126 @@ export async function GET(request, { params }) {
                return NextResponse.json({ error: 'Access denied' }, { status: 403 });
           }
 
-          // Fetch project with all related data
-          const project = await prisma.project.findFirst({
+          // Fetch all projects managed by this project manager
+          const projects = await prisma.project.findMany({
                where: {
-                    id: projectId,
                     managerId: decoded.id
+               },
+               include: {
+                    teamLead: {
+                         select: {
+                              id: true,
+                              name: true,
+                              email: true
+                         }
+                    },
+                    _count: {
+                         select: {
+                              tasks: true,
+                              milestones: true
+                         }
+                    }
+               },
+               orderBy: {
+                    createdAt: 'desc'
+               }
+          });
+
+          // Calculate additional stats for each project
+          const projectsWithStats = await Promise.all(projects.map(async (project) => {
+               // Get tasks for this project to calculate progress
+               const tasks = await prisma.task.findMany({
+                    where: { projectId: project.id },
+                    select: { status: true, deadline: true }
+               });
+
+               const completedTasks = tasks.filter(t => t.status === 'COMPLETED').length;
+               const progress = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+
+               // Check if project is overdue
+               const isOverdue = project.deadline &&
+                    new Date(project.deadline) < new Date() &&
+                    project.status !== 'COMPLETED';
+
+               // Calculate days until deadline
+               const daysUntilDeadline = project.deadline ?
+                    Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
+               return {
+                    ...project,
+                    progress,
+                    tasksCount: tasks.length,
+                    completedTasks,
+                    isOverdue,
+                    daysUntilDeadline,
+                    milestonesCount: project._count.milestones
+               };
+          }));
+
+          return NextResponse.json({ projects: projectsWithStats });
+
+     } catch (error) {
+          console.error('Projects API Error:', error);
+          return NextResponse.json(
+               { error: error.message },
+               { status: 500 }
+          );
+     }
+}
+
+// POST - Create a new project
+export async function POST(request) {
+     try {
+          const token = request.cookies.get('accessToken')?.value;
+
+          if (!token) {
+               return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+          }
+
+          const decoded = verifyAccessToken(token);
+          if (!decoded || decoded.role !== 'PROJECT_MANAGER') {
+               return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+          }
+
+          // Parse request body
+          const body = await request.json();
+
+          // Validate required fields
+          if (!body.name || !body.clientName || !body.clientEmail) {
+               return NextResponse.json(
+                    { error: 'Missing required fields: name, clientName, clientEmail' },
+                    { status: 400 }
+               );
+          }
+
+          // Create the project - FIXED VERSION
+          const project = await prisma.project.create({
+               data: {
+                    name: body.name,
+                    description: body.description || '',
+                    status: body.status || 'UPCOMING',
+                    priority: body.priority || 'MEDIUM',
+
+                    // Dates
+                    startDate: body.startDate ? new Date(body.startDate) : null,
+                    deadline: body.deadline ? new Date(body.deadline) : null,
+
+                    // Budget
+                    budget: body.budget ? parseFloat(body.budget) : null,
+
+                    // Risk
+                    riskLevel: body.riskLevel || 'LOW',
+
+                    // Client Info
+                    clientName: body.clientName,
+                    clientEmail: body.clientEmail,
+                    clientCompany: body.clientCompany || null,
+                    clientPhone: body.clientPhone || null,
+
+                    // Relations - ✅ DIRECT FOREIGN KEY ASSIGNMENT
+                    managerId: decoded.id,
+                    createdById: decoded.id,
+                    teamLeadId: body.teamLeadId || null,  // Simple and works with MongoDB
                },
                include: {
                     manager: {
@@ -173,119 +309,67 @@ export async function GET(request, { params }) {
                          select: {
                               id: true,
                               name: true,
-                              email: true,
-                              avatar: true
-                         }
-                    },
-                    milestones: {
-                         include: {
-                              tasks: {
-                                   select: {
-                                        id: true,
-                                        status: true,
-                                        assigneeId: true
-                                   }
-                              }
-                         },
-                         orderBy: { deadline: 'asc' }
-                    },
-                    tasks: {
-                         include: {
-                              assignee: {
-                                   select: {
-                                        id: true,
-                                        name: true,
-                                        avatar: true
-                                   }
-                              },
-                              milestone: {
-                                   select: {
-                                        id: true,
-                                        name: true
-                                   }
-                              }
-                         },
-                         orderBy: { createdAt: 'desc' }
-                    },
-                    documents: {
-                         include: {
-                              uploadedBy: {
-                                   select: {
-                                        name: true,
-                                        avatar: true
-                                   }
-                              }
-                         },
-                         orderBy: { uploadedAt: 'desc' }
-                    },
-                    feedbacks: {
-                         include: {
-                              createdBy: {
-                                   select: {
-                                        name: true,
-                                        role: true
-                                   }
-                              }
-                         },
-                         orderBy: { createdAt: 'desc' }
-                    },
-                    _count: {
-                         select: {
-                              tasks: true,
-                              milestones: true,
-                              documents: true,
-                              feedbacks: true
+                              email: true
                          }
                     }
                }
           });
 
-          if (!project) {
-               return NextResponse.json({ error: 'Project not found' }, { status: 404 });
-          }
-
-          // Calculate progress based on tasks
-          const totalTasks = project.tasks.length;
-          const completedTasks = project.tasks.filter(t => t.status === 'COMPLETED').length;
-          const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : project.progress || 0;
-
-          // Calculate milestone progress
-          const milestonesWithProgress = project.milestones.map(m => {
-               const milestoneTasks = m.tasks || [];
-               const completedMilestoneTasks = milestoneTasks.filter(t => t.status === 'COMPLETED').length;
-               const milestoneProgress = milestoneTasks.length > 0
-                    ? Math.round((completedMilestoneTasks / milestoneTasks.length) * 100)
-                    : 0;
-
-               return {
-                    ...m,
-                    progress: milestoneProgress,
-                    tasksCount: milestoneTasks.length,
-                    completedTasks: completedMilestoneTasks
-               };
+          // Log activity
+          await prisma.activityLog.create({
+               data: {
+                    action: 'CREATE_PROJECT',
+                    entityType: 'project',
+                    entityId: project.id,
+                    details: { projectName: project.name },
+                    userId: decoded.id
+               }
           });
 
-          const projectWithStats = {
-               ...project,
-               progress,
-               milestones: milestonesWithProgress,
-               stats: {
-                    totalTasks,
-                    completedTasks,
-                    pendingTasks: totalTasks - completedTasks,
-                    overdueTasks: project.tasks.filter(t =>
-                         t.status !== 'COMPLETED' && t.deadline && new Date(t.deadline) < new Date()
-                    ).length,
-                    completionRate: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-               }
-          };
+          // Notify team lead if assigned
+          if (body.teamLeadId) {
+               await prisma.notification.create({
+                    data: {
+                         type: 'PROJECT_UPDATE',
+                         title: 'New Project Assigned',
+                         message: `You have been assigned as Team Lead for project: ${project.name}`,
+                         link: `/team-lead/projects/${project.id}`,
+                         userId: body.teamLeadId,
+                         metadata: {
+                              projectId: project.id,
+                              projectName: project.name,
+                              assignedBy: decoded.name
+                         }
+                    }
+               });
+          }
 
-          return NextResponse.json({ project: projectWithStats });
+          return NextResponse.json({
+               success: true,
+               project,
+               message: 'Project created successfully'
+          }, { status: 201 });
 
      } catch (error) {
-          console.error('Project Details API Error:', error);
+          console.error('Create Project API Error:', error);
+
+          // Handle Prisma-specific errors
+          if (error.code === 'P2002') {
+               return NextResponse.json(
+                    { error: 'A project with this name already exists' },
+                    { status: 409 }
+               );
+          }
+
+          if (error.code === 'P2003') {
+               return NextResponse.json(
+                    { error: 'Invalid team lead ID provided' },
+                    { status: 400 }
+               );
+          }
+
           return NextResponse.json(
-               { error: error.message },
+               { error: error.message || 'Failed to create project' },
                { status: 500 }
           );
      }
