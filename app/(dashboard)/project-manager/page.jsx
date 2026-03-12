@@ -28,6 +28,8 @@ import { useProjectManager } from '../../../hooks/useProjectManager';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow, format } from 'date-fns';
 import Swal from 'sweetalert2';
+import Spinner from '../../Components/common/Spinner';
+
 
 const ProjectManagerDashboard = () => {
      const router = useRouter();
@@ -255,33 +257,9 @@ const ProjectManagerDashboard = () => {
           }
      };
 
-     // Handle logout
-     const handleLogout = async () => {
-          const result = await Swal.fire({
-               title: 'Are you sure?',
-               text: 'You will be logged out of your session',
-               icon: 'warning',
-               showCancelButton: true,
-               confirmButtonColor: '#b91c1c',
-               cancelButtonColor: '#6b7280',
-               confirmButtonText: 'Yes, logout'
-          });
-
-          if (result.isConfirmed) {
-               await fetch('/api/auth/logout', { method: 'POST' });
-               router.push('/login');
-          }
-     };
 
      if (loading.dashboard && projects.length === 0) {
-          return (
-               <div className="min-h-screen bg-bg-page flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading your dashboard...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title = "Project Manager Dashboard" />;
      }
 
      return (
@@ -299,13 +277,7 @@ const ProjectManagerDashboard = () => {
                                    <Plus size={18} />
                                    <span>Create New Project</span>
                               </button>
-                              <button
-                                   onClick={handleLogout}
-                                   className="flex items-center gap-2 px-4 py-2 bg-red-700 text-text-inverse rounded-lg font-medium hover:bg-red-800 transition-all shadow-sm"
-                              >
-                                   <LogOut size={18} />
-                                   <span>Logout</span>
-                              </button>
+                             
                          </div>
                     </header>
 

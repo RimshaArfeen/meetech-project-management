@@ -22,6 +22,12 @@ import { useProfile } from '../../../../hooks/useProfile'; // Adjust the import 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Spinner from '../../../Components/common/Spinner';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
+
+
 
 const ProfilePage = () => {
      const router = useRouter();
@@ -251,11 +257,29 @@ const ProfilePage = () => {
 
      // Handle logout
      const handleLogout = async () => {
-          try {
-               await fetch('/api/auth/logout', { method: 'POST' });
-               router.push('/login');
-          } catch (error) {
-               console.error('Logout error:', error);
+          const result = await MySwal.fire({
+               title: <p className="text-red-700 font-bold">Are you sure?</p>,
+               text: "You will need to login again to access the Executive Dashboard.",
+               icon: 'warning',
+               showCancelButton: true,
+               confirmButtonColor: '#b91c1c',
+               cancelButtonColor: '#6b7280',
+               confirmButtonText: 'Yes, logout',
+               background: '#ffffff',
+               customClass: {
+                    popup: 'rounded-2xl border border-border-default shadow-xl',
+                    confirmButton: 'rounded-xl px-4 py-2 font-medium',
+                    cancelButton: 'rounded-xl px-4 py-2 font-medium'
+               }
+          });
+          if (result.isConfirmed) {
+               try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    router.push('/login');
+               } catch (error) {
+                    console.error('Logout error:', error);
+               }
+
           }
      };
 

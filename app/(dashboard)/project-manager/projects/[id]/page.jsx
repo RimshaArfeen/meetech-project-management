@@ -45,6 +45,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import Spinner from '../../../../Components/common/Spinner';
 
 const ProjectDetailPage = ({ params }) => {
      const router = useRouter();
@@ -299,14 +300,7 @@ const ProjectDetailPage = ({ params }) => {
      };
 
      if (loading) {
-          return (
-               <div className="min-h-screen bg-bg-page p-page-x py-page-y flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading project details...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Project Details..." />
      }
 
      if (error || !project) {

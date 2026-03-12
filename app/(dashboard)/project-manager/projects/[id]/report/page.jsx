@@ -24,6 +24,9 @@ import {
 import { useProjectReports } from '../../../../../../hooks/useProjectReports';
 import { format } from 'date-fns';
 import Swal from 'sweetalert2';
+import Spinner from "../../../../../Components/common/Spinner";
+
+
 
 export default function ProjectReportPage({ params }) {
      const router = useRouter();
@@ -102,14 +105,7 @@ export default function ProjectReportPage({ params }) {
      };
 
      if (loading) {
-          return (
-               <div className="min-h-screen bg-bg-page flex items-center justify-center">
-                    <div className="text-center">
-                         <Loader size={40} className="animate-spin text-accent mx-auto mb-4" />
-                         <p className="text-text-muted">Generating report...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Report..." />;
      }
 
      if (error || !report) {
@@ -246,7 +242,7 @@ export default function ProjectReportPage({ params }) {
                               </div>
                               <div>
                                    <p className="text-sm text-text-muted mb-1">Phone</p>
-                                   <p className="font-medium text-text-primary">{report.client.phone || 'N/A'}</p>
+                                   <p className="font-medium text-text-primary">{report.client.phone || 'Not provided'}</p>
                               </div>
                          </div>
                     </div>

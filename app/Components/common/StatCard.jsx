@@ -15,7 +15,7 @@ export const StatCard = ({ title, value, icon, color }) => {
                          <p className="text-xs text-text-muted mb-1">{title}</p>
                          <p className="text-2xl font-bold text-text-primary">{value}</p>
                     </div>
-                    <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
+                    <div className={`p-3 rounded-lg ${color} ${colorClasses[color]}`}>
                          {icon}
                     </div>
                </div>

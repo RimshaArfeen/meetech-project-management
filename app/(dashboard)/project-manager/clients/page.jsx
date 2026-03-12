@@ -27,6 +27,7 @@ import {
 import { useProjectManagerClients } from '../../../../hooks/useProjectManagerClients';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import Spinner from '../../../Components/common/Spinner';
 
 export default function ClientDirectory() {
      const router = useRouter();
@@ -202,14 +203,7 @@ export default function ClientDirectory() {
      };
 
      if (loading.clients && clients.length === 0) {
-          return (
-               <div className="min-h-screen bg-bg-page flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading client directory...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Client Directory..." />;
      }
 
      return (

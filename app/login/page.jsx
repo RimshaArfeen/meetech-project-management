@@ -242,12 +242,7 @@ export default function LoginPage() {
                                                   >
                                                        Password
                                                   </label>
-                                                  <button
-                                                       type="button"
-                                                       className="text-xs text-accent hover:text-accent-hover transition-colors"
-                                                  >
-                                                       Forgot?
-                                                  </button>
+                                                 
                                              </div>
                                              <div className="relative">
                                                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />

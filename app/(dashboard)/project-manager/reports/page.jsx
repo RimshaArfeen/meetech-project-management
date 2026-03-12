@@ -25,7 +25,9 @@ import Link from 'next/link';
 import { useProjectReports } from '../../../../hooks/useProjectReports';
 import CustomReportModal from '../../../Components/project-manager/CustomReportModal';
 import FilterModal from '../../../Components/project-manager/ReportFilterModal';
-import Spinner from '../../../Components/common/Spinner';
+import Spinner from '../../../Components/common/Spinner';;
+import Swal from 'sweetalert2';
+
 
 export default function ReportsPage() {
      const {
@@ -287,8 +289,11 @@ export default function ReportsPage() {
      );
 }
 
-// Enhanced Metric Card Component
+//  Metric Card Component
 function MetricCard({ icon, label, value, trend, subtext, bgColor, warning }) {
+     // Ensure value is displayed properly
+     const displayValue = value !== undefined && value !== null ? value : '0';
+
      return (
           <div className={`bg-bg-surface border ${warning ? 'border-red-200' : 'border-border-default'} rounded-2xl p-6 shadow-sm hover:shadow-md transition-all`}>
                <div className="flex items-center justify-between mb-4">
@@ -305,7 +310,7 @@ function MetricCard({ icon, label, value, trend, subtext, bgColor, warning }) {
                     <p className="text-sm font-medium text-text-muted mb-1">{label}</p>
                     <div className="flex items-baseline gap-2">
                          <span className={`text-3xl font-black ${warning ? 'text-red-500' : 'text-text-primary'}`}>
-                              {value}
+                              {displayValue}
                          </span>
                          {subtext && (
                               <span className="text-xs text-text-muted">{subtext}</span>
@@ -331,7 +336,29 @@ function FilterChip({ label, onRemove }) {
 // Enhanced Report Card Component
 function ReportCard({ report, onExport, isExporting }) {
      const [showDetails, setShowDetails] = useState(false);
-
+     // In the ReportCard component, add fallback values
+     const {
+          projectName = 'Unnamed Project',
+          client = 'Unknown Client',
+          status = 'UNKNOWN',
+          riskLevel = 'LOW',
+          progress = 0,
+          tasksCompleted = 0,
+          totalTasks = 0,
+          overdueTasks = 0,
+          budgetBurn = null,
+          velocity = 0,
+          completedMilestones = 0,
+          milestonesCount = 0,
+          feedbackCount = 0,
+          deadline = null,
+          daysUntilDeadline = null,
+          isDelayed = false,
+          delayReason = null,
+          onTrack = true,
+          teamLead = { name: 'Not assigned' },
+          lastGenerated = new Date().toLocaleDateString()
+     } = report;
      const getRiskColor = (risk) => {
           switch (risk) {
                case 'HIGH': return 'bg-red-500/10 text-red-500 border-red-500/20';
@@ -384,7 +411,7 @@ function ReportCard({ report, onExport, isExporting }) {
                                    Updated {report.lastGenerated}
                               </p>
                               <p className="text-xs font-medium text-accent mt-1">
-                                   Lead: {report.teamLead.name || 'Not assigned'}
+                                   Lead: {report.teamLead?.name || 'Not assigned'}
                               </p>
                          </div>
                     </div>

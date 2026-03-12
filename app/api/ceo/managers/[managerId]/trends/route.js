@@ -1,8 +1,8 @@
 
 // app/api/ceo/managers/[managerId]/trends/route.js
 import { NextResponse } from 'next/server';
-import { verifyAccessToken } from '../../../../lib/auth/jwt';
-import prisma from '../../../../lib/prisma';
+import { verifyAccessToken } from '../../../../../../lib/auth/jwt';
+import prisma from '../../../../../../lib/prisma';
 
 export async function GET(request, { params }) {
      try {

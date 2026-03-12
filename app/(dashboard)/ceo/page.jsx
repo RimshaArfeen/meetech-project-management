@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import {
      LayoutDashboard,
      TrendingUp,
@@ -84,7 +82,6 @@ ChartJS.register(
      Filler
 );
 
-const MySwal = withReactContent(Swal);
 
 const App = () => {
      const [activeTab, setActiveTab] = useState('overview');
@@ -367,7 +364,7 @@ const App = () => {
                          transition={{ duration: 0.5 }}
                          className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-8"
                     >
-                         <div className="flex items-center gap-4">
+                         <div className="flex items-start gap-4">
                               <div className="p-3 bg-gradient-to-br from-accent to-accent-active rounded-2xl shadow-lg shadow-accent/20">
                                    <LayoutDashboard className="text-white" size={28} />
                               </div>

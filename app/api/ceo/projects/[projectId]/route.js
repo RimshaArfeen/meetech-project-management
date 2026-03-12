@@ -1,12 +1,13 @@
+
+// app/api/ceo/projects/[projectId]/route.js
 import { NextResponse } from 'next/server';
 import { verifyAccessToken } from '../../../../../lib/auth/jwt';
 import prisma from '../../../../../lib/prisma';
 
 export async function GET(request, { params }) {
      try {
-          const { projectId } = params;
+          const { projectId } = await params;
 
-          // Validate projectId format
           if (!projectId || typeof projectId !== 'string') {
                return NextResponse.json(
                     { error: 'Invalid project ID format' },

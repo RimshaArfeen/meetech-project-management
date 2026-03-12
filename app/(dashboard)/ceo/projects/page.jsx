@@ -77,7 +77,7 @@ export default function CEOProjectsPage() {
                <header className="mb-10">
                     <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
                          <div>
-                              <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">
+                              <h1 className="text-4xl font-bold text-text-primary tracking-tight">
                                    Executive Project Overview
                               </h1>
                               <p className="text-text-muted mt-1 font-medium italic">

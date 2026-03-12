@@ -90,11 +90,8 @@ export default function ProjectsPage() {
      };
 
      if (loading.dashboard) {
-          return (
-               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y">
-                    <Spinner message="Loading projects dashboard..." />
-               </div>
-          );
+          return <Spinner title="Projects Dashboard..." />
+         
      }
 
      if (error) {

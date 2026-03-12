@@ -1,7 +1,8 @@
 
 import { NextResponse } from 'next/server';
-import { verifyAccessToken } from '../../../../../../../lib/auth/jwt';
-import prisma from '../../../../../../../lib/auth/jwt';
+import { verifyAccessToken } from '../../../../../lib/auth/jwt';
+import prisma from '../../../../../lib/prisma';
+
 import { z } from 'zod';
 
 // Validation schema
@@ -154,7 +155,7 @@ export async function POST(request) {
           content: `🚨 **ISSUE REPORTED** - ${urgency}\n\n**Subject:** ${subject}\n\n**Description:** ${description}\n\n${impact ? `**Impact:** ${impact}\n\n` : ''}${suggestedResolution ? `**Suggested Resolution:** ${suggestedResolution}` : ''}`,
           taskId,
           authorId: decoded.id
-        });
+        }});
     }
 
     return NextResponse.json({

@@ -1,8 +1,8 @@
 
-
+// app/api/team-lead/report-issues/draft/route.js
 import { NextResponse } from 'next/server';
-import { verifyAccessToken } from '../../../../../../../lib/auth/jwt';
-import prisma from '../../../../../../../lib/auth/jwt';
+import { verifyAccessToken } from '../../../../../lib/auth/jwt';
+import prisma from '../../../../../lib/prisma';
 
 export async function POST(request) {
      try {

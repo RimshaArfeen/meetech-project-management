@@ -208,24 +208,28 @@ export default function CEOReportsPage() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 border-b border-border-subtle pb-8 relative z-10"
+                    className="flex flex-col 2xl:flex-row 2xl:items-end justify-between gap-6 mb-12 border-b border-border-subtle pb-8 relative z-10"
                >
                     <div>
                          <nav className="flex items-center gap-2 text-caption font-bold text-accent mb-2 uppercase tracking-widest">
-                              <Briefcase size={12} />
-                              <span>Executive Suite</span>
+                              <Briefcase size={24} />
+                              <span className="text-3xl">Executive Suite</span>
                               <ChevronRight size={12} className="text-text-disabled" />
                               <span className="text-text-muted">Quarterly Analytics</span>
                          </nav>
-                         <h1 className="text-headline-xl font-black text-text-primary tracking-tight leading-none">
+                        
+                    </div>
+<div className="flex flex-col lg:flex-row items-start xl:items-center gap-4">
+     <div>
+
+                         <h1 className="text-xl mt-4 font-black text-text-primary tracking-tight leading-none">
                               Strategic <span className="text-accent">Overview.</span>
                          </h1>
                          <p className="text-text-muted mt-3 font-medium max-w-md">
                               Real-time operational health and managerial performance metrics.
                          </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3">
+     </div>
+                    <div className=" w-full flex flex-wrap items-center justify-end gap-3">
                          {/* Date Range Selector */}
                          <div className="relative">
                               <button
@@ -318,6 +322,7 @@ export default function CEOReportsPage() {
                               <Download size={18} /> <span>EXPORT ASSETS</span>
                          </button>
                     </div>
+</div>
                </motion.header>
 
                {/* 2. CORE METRICS */}
@@ -639,7 +644,7 @@ function MetricCard({ label, value, trend, description, icon, isPositive, color 
      return (
           <motion.div
                whileHover={{ y: -2 }}
-               className={`bg-gradient-to-br ${getColorClasses()} bg-bg-surface border border-border-default p-7 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group border-b-4 border-b-transparent hover:border-b-accent`}
+               className={`bg-gradient-to-br ${getColorClasses()} bg-bg-surface border border-border-default p-5 xl:p-7 rounded-[2rem] shadow-sm hover:shadow-xl transition-all group border-b-4 border-b-transparent hover:border-b-accent`}
           >
                <div className="flex justify-between items-start mb-4">
                     <div className="p-3 bg-bg-surface rounded-2xl text-text-muted group-hover:text-accent group-hover:bg-accent/5 transition-colors">
