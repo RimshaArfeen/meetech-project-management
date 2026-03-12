@@ -1,4 +1,3 @@
-
 // app/login/page.jsx
 "use client"
 
@@ -10,11 +9,12 @@ import {
      Lock,
      Mail,
      ArrowRight,
-     Github,
-     Chrome,
-     ListTodo,
-     AlertCircle
+     AlertCircle,
+     Key
 } from 'lucide-react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import Logo from '../../public/icon.png';
 
 export default function LoginPage() {
      const router = useRouter();
@@ -26,12 +26,18 @@ export default function LoginPage() {
           password: ''
      });
 
+     // Subtle animations
+     const fadeInUp = {
+          initial: { opacity: 0, y: 10 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.4 }
+     };
+
      const handleChange = (e) => {
           setFormData({
                ...formData,
                [e.target.id]: e.target.value
           });
-          // Clear error when user types
           if (error) setError('');
      };
 
@@ -48,19 +54,16 @@ export default function LoginPage() {
                });
 
                const data = await response.json();
-               console.log("User Data", data)
+
                if (!response.ok) {
                     throw new Error(data.error || 'Login failed');
                }
 
-               // 1. Debug: Ensure data exists
                if (!data.user || !data.user.role) {
-                    console.error("Missing user data in response", data);
-                    router.push('/dashboard'); // Fallback
+                    router.push('/dashboard');
                     return;
                }
 
-               // 2. Debug: Check the redirect path
                const roleRedirects = {
                     'CEO': '/ceo',
                     'PROJECT_MANAGER': '/project-manager',
@@ -69,13 +72,7 @@ export default function LoginPage() {
                };
 
                const destination = roleRedirects[data.user.role] || '/dashboard';
-               console.log("Redirecting to:", destination);
-
-               // 3. Perform redirect
-               // router.push(destination);
-               // router.refresh(); // Forces Next.js to re-sync server components with new cookies
                window.location.href = destination;
-
 
           } catch (error) {
                setError(error.message);
@@ -85,142 +82,235 @@ export default function LoginPage() {
      };
 
      return (
-          <div className="min-h-screen bg-bg-page flex items-center justify-center p-4 font-sans text-text-body">
-               {/* Decorative background elements */}
-               <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-secondary/5 rounded-full blur-3xl"></div>
-               </div>
+          <div className="min-h-screen bg-bg-page flex">
+               {/* Left Section - Brand */}
+               <motion.div
+                    className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+               >
+                    <div className="max-w-md">
+                         {/* Logo and Company Name */}
+                         <motion.div
+                              className="flex items-center gap-3 mb-12"
+                              {...fadeInUp}
+                              transition={{ delay: 0.1 }}
+                         >
+                              <div className="relative w-16 h-16">
+                                   <Image
+                                        src={Logo}
+                                        alt="Meetech Logo"
+                                        fill
+                                        className="object-contain"
+                                        priority
+                                   />
+                              </div>
+                              <h1 className="text-4xl font-semibold text-text-primary tracking-tight">Meetech Development</h1>
+                         </motion.div>
 
-               <div className="w-full max-w-[440px] relative">
-                    {/* Logo Section */}
-                    <div className="flex flex-col items-center mb-8">
-                         <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center text-text-inverse shadow-lg shadow-accent/20 mb-4">
-                              <ListTodo size={28} />
-                         </div>
-                         <h1 className="text-4xl font-bold text-text-primary tracking-tight">ProManage</h1>
-                         <p className="text-text-muted mt-2 text-center">Enter your credentials to access your workspace</p>
+                         {/* Welcome Message */}
+                         <motion.h2
+                              className="text-3xl font-medium text-text-primary mb-3"
+                              {...fadeInUp}
+                              transition={{ delay: 0.2 }}
+                         >
+                              Welcome back
+                         </motion.h2>
+
+                         <motion.p
+                              className="text-text-muted mb-8"
+                              {...fadeInUp}
+                              transition={{ delay: 0.3 }}
+                         >
+                              Sign in to access your workspace and continue where you left off.
+                         </motion.p>
+
+                         {/* First Login Note - Minimal */}
+                         <motion.div
+                              className="bg-bg-subtle rounded-lg p-4 border border-border-default"
+                              {...fadeInUp}
+                              transition={{ delay: 0.4 }}
+                         >
+                              <div className="flex items-start gap-3">
+                                   <div className="p-1.5 bg-accent/10 rounded-md">
+                                        <Key className="w-4 h-4 text-accent" />
+                                   </div>
+                                   <div>
+                                        <p className="text-sm font-medium text-text-primary mb-1">First time login?</p>
+                                        <p className="text-xs text-text-muted">
+                                             You'll be prompted to change your password for security.
+                                        </p>
+                                   </div>
+                              </div>
+                         </motion.div>
+
+                         {/* Simple feature list */}
+                         <motion.div
+                              className="mt-8 space-y-2"
+                              {...fadeInUp}
+                              transition={{ delay: 0.5 }}
+                         >
+                              {[
+                                   'Enterprise-grade security',
+                                   'Role-based access control',
+                                   'Real-time collaboration'
+                              ].map((feature, index) => (
+                                   <div key={index} className="flex items-center gap-2 text-xs text-text-muted">
+                                        <div className="w-1 h-1 bg-accent/60 rounded-full"></div>
+                                        <span>{feature}</span>
+                                   </div>
+                              ))}
+                         </motion.div>
                     </div>
+               </motion.div>
 
-                    {/* Login Card */}
-                    <div className="bg-bg-surface border border-border-default rounded-2xl shadow-xl overflow-hidden">
-                         <div className="p-8">
-                              {/* Error Message */}
-                              {error && (
-                                   <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-500 text-sm">
-                                        <AlertCircle size={16} />
-                                        <span>{error}</span>
+               {/* Right Section - Login Form */}
+               <motion.div
+                    className="w-full lg:w-1/2 flex items-center justify-center p-6"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+               >
+                    <div className="w-full max-w-[400px]">
+                         {/* Mobile Logo */}
+                         <div className="lg:hidden text-center mb-8">
+                              <div className="relative w-10 h-10 mx-auto mb-3">
+                                   <Image
+                                        src={Logo}
+                                        alt="Meetech Logo"
+                                        fill
+                                        className="object-contain"
+                                   />
+                              </div>
+                              <h1 className="text-xl font-semibold text-text-primary">Meetech</h1>
+                         </div>
+
+                         {/* Login Card */}
+                         <div className="bg-bg-surface border border-border-default rounded-xl">
+                              <div className="p-8">
+                                   {/* Header */}
+                                   <div className="mb-6">
+                                        <h2 className="text-xl font-medium text-text-primary mb-1">Sign In</h2>
+                                        <p className="text-sm text-text-muted">Enter your credentials to continue</p>
                                    </div>
-                              )}
 
-                              <form onSubmit={handleSubmit} className="space-y-5">
-                                   {/* Email Field */}
-                                   <div className="space-y-2">
-                                        <label
-                                             htmlFor="email"
-                                             className="text-ui font-semibold text-text-primary flex items-center gap-2"
+                                   {/* Error Message */}
+                                   {error && (
+                                        <motion.div
+                                             className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-500 text-sm"
+                                             initial={{ opacity: 0, y: -5 }}
+                                             animate={{ opacity: 1, y: 0 }}
                                         >
-                                             Email Address
-                                        </label>
-                                        <div className="relative group">
-                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-disabled group-focus-within:text-accent transition-colors">
-                                                  <Mail size={18} />
-                                             </div>
-                                             <input
-                                                  id="email"
-                                                  type="email"
-                                                  value={formData.email}
-                                                  onChange={handleChange}
-                                                  placeholder="name@company.com"
-                                                  required
-                                                  className="w-full pl-10 pr-4 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-1 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
-                                             />
-                                        </div>
-                                   </div>
+                                             <AlertCircle size={16} />
+                                             <span>{error}</span>
+                                        </motion.div>
+                                   )}
 
-                                   {/* Password Field */}
-                                   <div className="space-y-2">
-                                        <div className="flex justify-between items-center">
+                                   <form onSubmit={handleSubmit} className="space-y-5">
+                                        {/* Email Field */}
+                                        <div className="space-y-2">
                                              <label
-                                                  htmlFor="password"
-                                                  className="text-ui font-semibold text-text-primary flex items-center gap-2"
+                                                  htmlFor="email"
+                                                  className="text-xs font-medium text-text-primary uppercase tracking-wide"
                                              >
-                                                  Password
+                                                  Email
                                              </label>
-                                        </div>
-                                        <div className="relative group">
-                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-disabled group-focus-within:text-accent transition-colors">
-                                                  <Lock size={18} />
+                                             <div className="relative">
+                                                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                                                  <input
+                                                       id="email"
+                                                       type="email"
+                                                       value={formData.email}
+                                                       onChange={handleChange}
+                                                       placeholder="name@company.com"
+                                                       required
+                                                       className="w-full pl-9 pr-3 py-2.5 bg-bg-subtle border border-border-default rounded-lg 
+                                                text-sm text-text-primary placeholder:text-text-disabled
+                                                focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20
+                                                transition-colors"
+                                                  />
                                              </div>
-                                             <input
-                                                  id="password"
-                                                  type={showPassword ? "text" : "password"}
-                                                  value={formData.password}
-                                                  onChange={handleChange}
-                                                  placeholder="••••••••"
-                                                  required
-                                                  className="w-full pl-10 pr-12 py-3 bg-bg-subtle border border-border-default rounded-lg outline-none focus:ring-1 focus:ring-accent/20 focus:border-accent transition-all text-sm placeholder:text-text-disabled"
-                                             />
-                                             <button
-                                                  type="button"
-                                                  onClick={() => setShowPassword(!showPassword)}
-                                                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-disabled hover:text-text-muted transition-colors"
-                                             >
-                                                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                             </button>
                                         </div>
-                                   </div>
 
-                                   {/* Submit Button */}
-                                   <button
-                                        type="submit"
-                                        disabled={isLoading}
-                                        className="w-full bg-accent hover:bg-accent-hover active:bg-accent-active text-text-inverse py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-accent/10 disabled:opacity-70 disabled:cursor-not-allowed group"
-                                   >
-                                        {isLoading ? (
-                                             <div className="w-5 h-5 border-2 border-text-inverse/30 border-t-text-inverse rounded-full animate-spin"></div>
-                                        ) : (
-                                             <>
-                                                  Sign In to Workspace
-                                                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                             </>
-                                        )}
-                                   </button>
-                              </form>
+                                        {/* Password Field */}
+                                        <div className="space-y-2">
+                                             <div className="flex justify-between items-center">
+                                                  <label
+                                                       htmlFor="password"
+                                                       className="text-xs font-medium text-text-primary uppercase tracking-wide"
+                                                  >
+                                                       Password
+                                                  </label>
+                                                  <button
+                                                       type="button"
+                                                       className="text-xs text-accent hover:text-accent-hover transition-colors"
+                                                  >
+                                                       Forgot?
+                                                  </button>
+                                             </div>
+                                             <div className="relative">
+                                                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                                                  <input
+                                                       id="password"
+                                                       type={showPassword ? "text" : "password"}
+                                                       value={formData.password}
+                                                       onChange={handleChange}
+                                                       placeholder="••••••••"
+                                                       required
+                                                       className="w-full pl-9 pr-10 py-2.5 bg-bg-subtle border border-border-default rounded-lg 
+                                                text-sm text-text-primary placeholder:text-text-disabled
+                                                focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20
+                                                transition-colors"
+                                                  />
+                                                  <button
+                                                       type="button"
+                                                       onClick={() => setShowPassword(!showPassword)}
+                                                       className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+                                                  >
+                                                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                  </button>
+                                             </div>
+                                        </div>
 
-                              {/* <div className="relative my-8 text-center">
-                                   <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-border-default"></div>
-                                   </div>
-                                   <span className="relative px-4 bg-bg-surface text-caption font-bold text-text-disabled uppercase tracking-widest">
-                                        Or continue with
-                                   </span>
+                                        {/* Submit Button */}
+                                        <button
+                                             type="submit"
+                                             disabled={isLoading}
+                                             className="w-full bg-accent hover:bg-accent-hover active:bg-accent-active text-text-inverse py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                                        >
+                                             {isLoading ? (
+                                                  <>
+                                                       <div className="w-4 h-4 border-2 border-text-inverse/30 border-t-text-inverse rounded-full animate-spin"></div>
+                                                       <span>Signing in...</span>
+                                                  </>
+                                             ) : (
+                                                  <>
+                                                       <span>Sign In</span>
+                                                       <ArrowRight size={16} />
+                                                  </>
+                                             )}
+                                        </button>
+                                   </form>
                               </div>
 
-                              Social Logins
-                              <div className="grid grid-cols-2 gap-4">
-                                   <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-lg hover:bg-bg-subtle text-ui font-semibold text-text-primary transition-colors">
-                                        <Chrome size={18} className="text-[#4285F4]" />
-                                        Google
-                                   </button>
-                                   <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-lg hover:bg-bg-subtle text-ui font-semibold text-text-primary transition-colors">
-                                        <Github size={18} />
-                                        GitHub
-                                   </button>
-                              </div> */}
+                              {/* Footer */}
+                              <div className="p-6 bg-bg-subtle border-t border-border-default text-center">
+                                   <p className="text-xs text-text-muted">
+                                        Don't have an account?{' '}
+                                        <button className="text-accent hover:text-accent-hover font-medium transition-colors">
+                                             Contact admin
+                                        </button>
+                                   </p>
+                              </div>
                          </div>
 
-                         {/* Footer Info */}
-                         <div className="p-6 bg-bg-subtle border-t border-border-default text-center">
-                              <p className="text-caption text-text-muted">
-                                   Don't have an account?{' '}
-                                   <a href="#" className="font-bold text-accent hover:text-accent-hover transition-colors">
-                                        Request access from admin
-                                   </a>
-                              </p>
-                         </div>
+                         {/* Simple trust badge */}
+                         <p className="text-center text-xs text-text-disabled mt-4">
+                              Secured by enterprise-grade encryption
+                         </p>
                     </div>
-               </div>
+               </motion.div>
           </div>
      );
 }
