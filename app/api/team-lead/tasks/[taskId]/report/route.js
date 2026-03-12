@@ -1,11 +1,14 @@
 
+// app/api/team-lead/tasks/[taskId]/report/route.js
 import { NextResponse } from 'next/server';
 import { verifyAccessToken } from '../../../../../../lib/auth/jwt';
 import prisma from '../../../../../../lib/prisma';
 
+
 export async function POST(request, { params }) {
      try {
-          const { taskId } = params;
+          // ✅ FIX: Await the params
+          const { taskId } = await params;
           const { issue, priority, description } = await request.json();
 
           const token = request.cookies.get('accessToken')?.value;
@@ -45,7 +48,15 @@ export async function POST(request, { params }) {
                }
           });
 
-          if (!task || task.project.teamLeadId !== decoded.id) {
+          if (!task) {
+               return NextResponse.json(
+                    { error: 'Task not found' },
+                    { status: 404 }
+               );
+          }
+
+          // Verify team lead has access
+          if (task.project.teamLeadId !== decoded.id) {
                return NextResponse.json(
                     { error: 'Access denied' },
                     { status: 403 }
@@ -54,7 +65,7 @@ export async function POST(request, { params }) {
 
           if (!task.project.managerId) {
                return NextResponse.json(
-                    { error: 'No project manager assigned' },
+                    { error: 'No project manager assigned to this project' },
                     { status: 400 }
                );
           }
@@ -97,7 +108,7 @@ export async function POST(request, { params }) {
                }
           });
 
-          // Optionally, update task status or add a special flag
+          // Optionally, update task status if critical
           if (priority === 'HIGH' || priority === 'CRITICAL') {
                await prisma.task.update({
                     where: { id: taskId },
@@ -116,7 +127,7 @@ export async function POST(request, { params }) {
      } catch (error) {
           console.error('Report issue error:', error);
           return NextResponse.json(
-               { error: 'Failed to report issue' },
+               { error: error.message || 'Failed to report issue' },
                { status: 500 }
           );
      }

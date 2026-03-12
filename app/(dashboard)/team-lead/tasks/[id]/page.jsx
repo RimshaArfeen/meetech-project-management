@@ -23,6 +23,8 @@ import Link from 'next/link';
 import { useTeamLeadTask } from '../../../../../hooks/useTeamLeadTasks'; // ✅ Correct hook for Team Lead
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import Spinner from "../../../../Components/common/Spinner";
+
 
 const TaskDetailPage = ({ params }) => {
      // ✅ Correctly unwrap params
@@ -62,10 +64,11 @@ const TaskDetailPage = ({ params }) => {
           'LOW': 'text-green-500 bg-green-500/10'
      };
 
+     // In your page component, update the handlers:
      const handleStatusChange = async (newStatus) => {
           try {
                setUpdating(true);
-               // ✅ Use the hook's updateTaskStatus method
+               // ✅ Now just pass status (taskId is already in the hook)
                const result = await updateTaskStatus(newStatus, newStatus === 'COMPLETED');
 
                if (result.success) {
@@ -85,7 +88,7 @@ const TaskDetailPage = ({ params }) => {
           if (!comment.trim()) return;
 
           try {
-               // ✅ Use the hook's addComment method
+               // ✅ Now just pass content (taskId is already in the hook)
                const result = await addComment(comment);
 
                if (result.success) {
@@ -98,14 +101,7 @@ const TaskDetailPage = ({ params }) => {
      };
 
      if (loading) {
-          return (
-               <div className="flex flex-col h-full bg-bg-page items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading task...</p>
-                    </div>
-               </div>
-          );
+          return  <Spinner title="Tasks" />
      }
 
      if (error || !task) {
@@ -138,21 +134,21 @@ const TaskDetailPage = ({ params }) => {
                          <span className="text-xs font-bold text-text-muted uppercase tracking-widest">
                               Task ID: {task.id.slice(-8)}
                          </span>
-                         <div className={`ml-2 w-2 h-2 rounded-full ${task.status === 'COMPLETED' ? 'bg-green-500' :
+                         <div className={`ml-2 w-2 h-2 rounded-full text-xs  ${task.status === 'COMPLETED' ? 'bg-green-500' :
                               task.status === 'IN_PROGRESS' ? 'bg-accent' :
                                    task.status === 'REVIEW' ? 'bg-yellow-500' :
                                         task.status === 'BLOCKED' ? 'bg-red-500' :
                                              'bg-slate-500'
                               }`} />
                     </div>
-                    <div className="flex items-center gap-3">
+                    {/* <div className="flex items-center gap-3">
                          <button className="text-xs font-bold text-accent px-3 py-1.5 rounded-lg hover:bg-accent-muted transition-colors">
                               Share Task
                          </button>
                          <button className="p-2 text-text-muted hover:text-text-primary">
                               <MoreVertical size={20} />
                          </button>
-                    </div>
+                    </div> */}
                </header>
 
                {/* Review Request Modal */}
@@ -214,8 +210,8 @@ const TaskDetailPage = ({ params }) => {
                                         </div>
                                         {task.progress > 0 && (
                                              <div className="flex items-center gap-1.5">
-                                                  <div className="w-16 h-1.5 bg-bg-subtle rounded-full overflow-hidden">
-                                                       <div className="h-full bg-accent" style={{ width: `${task.progress}%` }} />
+                                                  <div className="w-16 h-1.5 bg-bg-subtle rounded-full overflow-hidden border border-accent/80">
+                                                       <div className="h-full bg-accent border border-accent/80" style={{ width: `${task.progress}%` }} />
                                                   </div>
                                                   <span>{task.progress}%</span>
                                              </div>

@@ -21,6 +21,7 @@ import { useTeamLeadDevelopers } from '../../../../hooks/useTeamLeadDevelopers';
 import InviteDeveloperModal from '../../../Components/team-lead/InviteDeveloperModal';
 import DeveloperFiltersModal from '../../../Components/team-lead/DeveloperFiltersModal';
 import Spinner from '../../../Components/common/Spinner';
+import DeveloperDetailsModal from '../../../Components/team-lead/DeveloperDetailsModal';
 
 const Page = () => {
      const {
@@ -31,13 +32,34 @@ const Page = () => {
           updateFilters,
           clearFilters,
           addDeveloper,
+          deactivateDeveloper,
           refetch
      } = useTeamLeadDevelopers();
+
 
      const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
      const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
      const [searchInput, setSearchInput] = useState('');
      const [selectedDeveloper, setSelectedDeveloper] = useState(null);
+     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+     console.log(developers)
+     // Add the handler
+     const handleViewTasks = (developer) => {
+          setSelectedDeveloper(developer);
+          setIsDetailsModalOpen(true);
+     };
+
+     // Add deactivate handler
+     const handleDeactivate = async (developerId) => {
+          // This will be called from the modal
+          const result = await deactivateDeveloper(developerId);
+          if (result.success) {
+               // Refresh the list
+               refetch();
+          }
+          return result;
+     };
 
      const handleSearch = (e) => {
           e.preventDefault();
@@ -49,11 +71,7 @@ const Page = () => {
           updateFilters({ search: '' });
      };
 
-     const handleViewTasks = (developer) => {
-          setSelectedDeveloper(developer);
-          // You could navigate to developer details page or open a modal
-          // router.push(`/team-lead/my-developers/${developer.id}`);
-     };
+
 
      const getWorkloadColor = (workload) => {
           if (workload > 85) return 'text-red-500';
@@ -113,7 +131,7 @@ const Page = () => {
                                    type="text"
                                    value={searchInput}
                                    onChange={(e) => setSearchInput(e.target.value)}
-                                   placeholder="Search by name, email, or skill..."
+                                   placeholder="Search by name, or skill..."
                                    className=" w-full pl-10 pr-10 py-2.5 bg-bg-surface border border-border-default rounded-xl focus:ring-1 focus:ring-accent outline-none text-ui "
                               />
                               {searchInput && (
@@ -139,13 +157,13 @@ const Page = () => {
                                    )}
                               </button>
 
-                              <button
+                              {/* <button
                                    onClick={() => setIsInviteModalOpen(true)}
                                    className="bg-accent hover:bg-accent-hover text-text-inverse px-4 py-2.5 rounded-xl font-bold text-ui flex items-center gap-2 transition-all"
                               >
                                    <UserPlus size={18} />
                                    Invite Developer
-                              </button>
+                              </button> */}       
                          </div>
                     </div>
                </div>
@@ -230,8 +248,19 @@ const Page = () => {
                          ))}
                     </div>
                )}
-
                {/* Modals */}
+               {isDetailsModalOpen && (
+                    <DeveloperDetailsModal
+                         isOpen={isDetailsModalOpen}
+                         onClose={() => {
+                              setIsDetailsModalOpen(false);
+                              setSelectedDeveloper(null);
+                         }}
+                         developer={selectedDeveloper}
+                         onDeactivate={handleDeactivate}
+                    />
+               )}
+              
                <InviteDeveloperModal
                     isOpen={isInviteModalOpen}
                     onClose={() => setIsInviteModalOpen(false)}
@@ -252,6 +281,7 @@ const DeveloperCard = ({ dev, onViewTasks, getWorkloadColor, getWorkloadBarColor
      const [showMenu, setShowMenu] = useState(false);
 
      return (
+          
           <div className="group bg-bg-surface border border-border-default rounded-2xl p-5 hover:border-accent/40 hover:shadow-xl transition-all relative overflow-hidden">
                {/* Workload Indicator Strip */}
                <div
@@ -306,7 +336,7 @@ const DeveloperCard = ({ dev, onViewTasks, getWorkloadColor, getWorkloadBarColor
                          </div>
                     </div>
 
-                    <div className="relative">
+                    {/* <div className="relative">
                          <button
                               onClick={() => setShowMenu(!showMenu)}
                               className="text-text-disabled hover:text-text-primary transition-colors p-1"
@@ -315,19 +345,12 @@ const DeveloperCard = ({ dev, onViewTasks, getWorkloadColor, getWorkloadBarColor
                          </button>
 
                          {showMenu && (
-                              <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border-default rounded-xl shadow-xl z-10 py-1">
-                                   {/* <button className="w-full px-4 py-2 text-left text-sm hover:bg-bg-subtle transition-colors">
-                                        View Profile
-                                   </button>
-                                   <button className="w-full px-4 py-2 text-left text-sm hover:bg-bg-subtle transition-colors">
-                                        Adjust Workload
-                                   </button> */}
-                                   <button className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-500/10 transition-colors">
+                              
+                                  <button className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-500/10 transition-colors">
                                         Deactivate
-                                   </button>
-                              </div>
+                                   </button> 
                          )}
-                    </div>
+                    </div> */}
                </div>
 
                {/* Quick Stats Grid */}
@@ -412,15 +435,19 @@ const DeveloperCard = ({ dev, onViewTasks, getWorkloadColor, getWorkloadBarColor
                          <Mail size={16} />
                          Email
                     </a>
-                    <Link
-                         href={`/team-lead/my-developers/${dev.id}`}
+                    <button
+                         onClick={() => onViewTasks(dev)}
                          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 bg-bg-card border border-accent/20 rounded-lg text-ui font-bold text-accent hover:bg-accent hover:text-text-inverse transition-all"
                     >
                          <ExternalLink size={16} />
                          View Tasks
-                    </Link>
+                    </button>
                </div>
+               {dev.status === 'INACTIVE' && ( 
+               <h4 className=' mx-auto my-3 text-text-muted text-center text-xs relative bottom-0'>Deactivated by Team Lead</h4>
+               )}
           </div>
+          
      );
 };
 

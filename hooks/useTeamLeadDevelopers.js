@@ -49,6 +49,35 @@ export function useTeamLeadDevelopers() {
           }
      }, [filters, router]);
 
+     const deactivateDeveloper = useCallback(async (developerId) => {
+          try {
+               setLoading(prev => ({ ...prev, deactivating: true }));
+
+               const response = await fetch(`/api/team-lead/developers/${developerId}/deactivate`, {
+                    method: 'POST',
+                    headers: {
+                         'Content-Type': 'application/json',
+                    }
+               });
+
+               const data = await response.json();
+
+               if (!response.ok) {
+                    throw new Error(data.error || 'Failed to deactivate developer');
+               }
+
+               // Refresh the developers list
+               await fetchDevelopers();
+
+               return { success: true };
+          } catch (err) {
+               console.error('Deactivate developer error:', err);
+               return { success: false, error: err.message };
+          } finally {
+               setLoading(prev => ({ ...prev, deactivating: false }));
+          }
+     }, [fetchDevelopers]);
+
      useEffect(() => {
           fetchDevelopers();
      }, [fetchDevelopers]);
@@ -109,6 +138,7 @@ export function useTeamLeadDevelopers() {
           clearFilters,
           addDeveloper,
           getDeveloperStats,
+          deactivateDeveloper,
           refetch: fetchDevelopers
      };
 }

@@ -26,6 +26,8 @@ import Link from 'next/link';
 import { useDeveloperTask } from '../../../../../hooks/useDeveloperTasks';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import Spinner from '../../../../../Components/common/Spinner';
+
 
 const TaskDetailPage = ({ params }) => {
      const unwrappedParams = React.use(params);
@@ -112,14 +114,7 @@ const TaskDetailPage = ({ params }) => {
      };
 
      if (loading) {
-          return (
-               <div className="flex flex-col h-full bg-bg-page items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading task...</p>
-                    </div>
-               </div>
-          );
+          return  <Spinner title="Tasks"/>
      }
 
      if (error || !task) {
@@ -157,7 +152,7 @@ const TaskDetailPage = ({ params }) => {
                                    task.status === 'REVIEW' ? 'bg-yellow-500' :
                                         task.status === 'BLOCKED' ? 'bg-red-500' :
                                              'bg-slate-500'
-                              }`} />
+                              }`} />{task.status}
                     </div>
                     <div className="flex items-center gap-3">
                          <button className="text-xs font-bold text-accent px-3 py-1.5 rounded-lg hover:bg-accent-muted transition-colors">

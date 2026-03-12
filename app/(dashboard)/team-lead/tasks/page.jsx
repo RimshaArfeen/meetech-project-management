@@ -33,6 +33,8 @@ const TeamLeadTasksPage = () => {
           refetch
      } = useTeamLeadTasks();
 
+     console.log('Projects from hook:', projects);
+     console.log('Developers from hook:', developers);
      const [showMilestoneModal, setShowMilestoneModal] = useState(false);
      const [view, setView] = useState('grid');
      const [searchInput, setSearchInput] = useState('');
@@ -266,7 +268,7 @@ const TeamLeadTasksPage = () => {
                               </div>
 
                               {/* Project Filter */}
-                              <select
+                              {/* <select
                                    value={selectedProject}
                                    onChange={(e) => setSelectedProject(e.target.value)}
                                    className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
@@ -275,10 +277,10 @@ const TeamLeadTasksPage = () => {
                                    {projects.map(project => (
                                         <option key={project.id} value={project.id}>{project.name}</option>
                                    ))}
-                              </select>
+                              </select> */}
 
                               {/* Developer Filter */}
-                              <select
+                              {/* <select
                                    value={selectedAssignee}
                                    onChange={(e) => setSelectedAssignee(e.target.value)}
                                    className="px-4 py-2 bg-bg-subtle border border-border-default rounded-lg focus:ring-1 focus:ring-accent outline-none min-w-[150px]"
@@ -287,7 +289,7 @@ const TeamLeadTasksPage = () => {
                                    {developers.map(dev => (
                                         <option key={dev.id} value={dev.id}>{dev.name}</option>
                                    ))}
-                              </select>
+                              </select> */}
 
                               {/* Status Filter */}
                               <select
