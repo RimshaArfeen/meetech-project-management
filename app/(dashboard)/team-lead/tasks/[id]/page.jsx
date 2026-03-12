@@ -1,5 +1,4 @@
-
-// app/(dashboard)/developer/tasks/[id]/page.jsx
+// app/(dashboard)/team-lead/tasks/[id]/page.jsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import {
@@ -21,15 +20,19 @@ import {
      Edit3
 } from 'lucide-react';
 import Link from 'next/link';
-import { useDeveloperTask } from '../../../../../hooks/useDeveloperTasks';
+import { useTeamLeadTask } from '../../../../../hooks/useTeamLeadTasks'; // ✅ Correct hook for Team Lead
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 
 const TaskDetailPage = ({ params }) => {
+     // ✅ Correctly unwrap params
      const unwrappedParams = React.use(params);
+     const taskId = unwrappedParams.id;
 
      const router = useRouter();
-     const { task, loading, error, refetch } = useDeveloperTask(unwrappedParams.id);
+     // ✅ Use the correct Team Lead hook
+     const { task, loading, error, updateTaskStatus, addComment, refetch } = useTeamLeadTask(taskId);
+
      const [status, setStatus] = useState('');
      const [comment, setComment] = useState('');
      const [comments, setComments] = useState([]);
@@ -62,18 +65,10 @@ const TaskDetailPage = ({ params }) => {
      const handleStatusChange = async (newStatus) => {
           try {
                setUpdating(true);
-               const response = await fetch(`/api/developer/tasks/${params.id}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                         status: newStatus,
-                         reviewNotes: newStatus === 'REVIEW' ? reviewNotes : null
-                    }),
-               });
+               // ✅ Use the hook's updateTaskStatus method
+               const result = await updateTaskStatus(newStatus, newStatus === 'COMPLETED');
 
-               if (response.ok) {
+               if (result.success) {
                     setStatus(newStatus);
                     setShowReviewModal(false);
                     setReviewNotes('');
@@ -90,17 +85,10 @@ const TaskDetailPage = ({ params }) => {
           if (!comment.trim()) return;
 
           try {
-               const response = await fetch(`/api/developer/tasks/${params.id}/comments`, {
-                    method: 'POST',
-                    headers: {
-                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ content: comment }),
-               });
+               // ✅ Use the hook's addComment method
+               const result = await addComment(comment);
 
-               if (response.ok) {
-                    const data = await response.json();
-                    setComments([data.comment, ...comments]);
+               if (result.success) {
                     setComment('');
                     refetch();
                }
@@ -128,7 +116,7 @@ const TaskDetailPage = ({ params }) => {
                          <h2 className="text-xl font-bold text-text-primary mb-2">Task Not Found</h2>
                          <p className="text-text-muted mb-6">{error || 'The task you\'re looking for doesn\'t exist or you don\'t have access.'}</p>
                          <button
-                              onClick={() => router.push('/developer/tasks')}
+                              onClick={() => router.push('/team-lead/tasks')}
                               className="bg-accent text-text-inverse px-6 py-3 rounded-xl font-bold hover:bg-accent-hover transition-all"
                          >
                               Back to Tasks
@@ -143,7 +131,7 @@ const TaskDetailPage = ({ params }) => {
                {/* Top Navigation Bar */}
                <header className="h-14 px-6 border-b border-border-default bg-bg-surface flex items-center justify-between sticky top-0 z-20">
                     <div className="flex items-center gap-4">
-                         <Link href="/developer/tasks" className="p-2 hover:bg-bg-subtle rounded-full text-text-muted hover:text-accent transition-colors">
+                         <Link href="/team-lead/tasks" className="p-2 hover:bg-bg-subtle rounded-full text-text-muted hover:text-accent transition-colors">
                               <ArrowLeft size={20} />
                          </Link>
                          <div className="h-6 w-px bg-border-default"></div>
@@ -202,7 +190,7 @@ const TaskDetailPage = ({ params }) => {
                <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
 
                     {/* LEFT COLUMN: Task Details */}
-                    <main className="flex-1 overflow-y-auto chat-scroll  p-8 chat-scroll">
+                    <main className="flex-1 overflow-y-auto chat-scroll p-8">
                          <div className="max-w-4xl mx-auto space-y-10">
 
                               {/* Title & Metadata */}
@@ -252,7 +240,7 @@ const TaskDetailPage = ({ params }) => {
                                              Attachments ({task.attachments.length})
                                         </h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                             {task.attachments.map((file, i) => (
+                                             {task.attachments.map((file) => (
                                                   <a
                                                        key={file.id}
                                                        href={file.url}
@@ -359,7 +347,7 @@ const TaskDetailPage = ({ params }) => {
                     </main>
 
                     {/* RIGHT SIDEBAR: Actions & Metadata */}
-                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto chat-scroll ">
+                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto">
 
                          {/* Status Control */}
                          <div className="space-y-4">

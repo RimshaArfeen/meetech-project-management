@@ -28,6 +28,7 @@ export default function ProjectsPage() {
           return <Spinner title="Your Projects..." />;
      }
 
+     console.log("TeamLead Projects", projects)    
      if (error) {
           return (
                <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">

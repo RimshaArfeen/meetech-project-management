@@ -1,13 +1,11 @@
-
 // app/api/team-lead/tasks/[taskId]/route.js
 import { NextResponse } from 'next/server';
-import { verifyAccessToken } from "../../../../../lib/auth/jwt";
+import { verifyAccessToken } from '../../../../../lib/auth/jwt';
 import prisma from '../../../../../lib/prisma';
-
 
 export async function GET(request, { params }) {
      try {
-          const { taskId } = params;
+          const { taskId } = await params;
           const token = request.cookies.get('accessToken')?.value;
 
           if (!token) {
@@ -20,11 +18,12 @@ export async function GET(request, { params }) {
           const decoded = verifyAccessToken(token);
           if (!decoded || decoded.role !== 'TEAM_LEAD') {
                return NextResponse.json(
-                    { error: 'Access denied' },
+                    { error: 'Access denied. Only Team Leads can view tasks.' },
                     { status: 403 }
                );
           }
 
+          // Fetch task with all related data
           const task = await prisma.task.findUnique({
                where: { id: taskId },
                include: {
@@ -97,15 +96,15 @@ export async function GET(request, { params }) {
                );
           }
 
-          // Verify access
+          // Verify this team lead has access to this task's project
           if (task.project.teamLeadId !== decoded.id) {
                return NextResponse.json(
-                    { error: 'Access denied' },
+                    { error: 'Access denied. You are not the team lead for this project.' },
                     { status: 403 }
                );
           }
 
-          // Calculate metrics
+          // Calculate additional metrics
           const now = new Date();
           const taskWithMeta = {
                ...task,
@@ -113,10 +112,6 @@ export async function GET(request, { params }) {
                daysUntilDeadline: task.deadline
                     ? Math.ceil((new Date(task.deadline) - now) / (1000 * 60 * 60 * 24))
                     : null,
-               timeSpent: task.actualHours ? `${task.actualHours}h` : 'Not started',
-               timeRemaining: task.estimatedHours && task.actualHours
-                    ? `${Math.max(0, task.estimatedHours - task.actualHours)}h`
-                    : task.estimatedHours ? `${task.estimatedHours}h` : 'N/A',
                progress: task.estimatedHours && task.actualHours
                     ? Math.min(100, Math.round((task.actualHours / task.estimatedHours) * 100))
                     : 0
@@ -125,19 +120,19 @@ export async function GET(request, { params }) {
           return NextResponse.json({ task: taskWithMeta });
 
      } catch (error) {
-          console.error('Task details error:', error);
+          console.error('Team Lead Task Details API Error:', error);
           return NextResponse.json(
-               { error: 'Failed to fetch task details' },
+               { error: error.message || 'Failed to fetch task details' },
                { status: 500 }
           );
      }
 }
 
-
 export async function PATCH(request, { params }) {
      try {
-          const { taskId } = params;
+          const { taskId } = await params;
           const token = request.cookies.get('accessToken')?.value;
+          const body = await request.json();
 
           if (!token) {
                return NextResponse.json(
@@ -149,65 +144,55 @@ export async function PATCH(request, { params }) {
           const decoded = verifyAccessToken(token);
           if (!decoded || decoded.role !== 'TEAM_LEAD') {
                return NextResponse.json(
-                    { error: 'Access denied' },
+                    { error: 'Access denied. Only Team Leads can update tasks.' },
                     { status: 403 }
                );
           }
-
-          const body = await request.json();
-          const {
-               title,
-               description,
-               status,
-               priority,
-               assigneeId,
-               deadline,
-               estimatedHours,
-               actualHours,
-               reviewApproved,
-               reviewNotes
-          } = body;
 
           // Verify task belongs to team lead's project
           const existingTask = await prisma.task.findUnique({
                where: { id: taskId },
                include: {
                     project: {
-                         select: { teamLeadId: true, name: true }
+                         select: {
+                              teamLeadId: true,
+                              name: true
+                         }
                     },
                     assignee: {
-                         select: { id: true, name: true }
+                         select: {
+                              id: true,
+                              name: true
+                         }
                     }
                }
           });
 
           if (!existingTask || existingTask.project.teamLeadId !== decoded.id) {
                return NextResponse.json(
-                    { error: 'Access denied' },
+                    { error: 'Access denied. Task not found or you do not have permission.' },
                     { status: 403 }
                );
           }
 
+          const { status, reviewApproved, reviewNotes, estimatedHours, actualHours, priority, deadline } = body;
+
           // Prepare update data
-          const updateData = {
-               title,
-               description,
-               priority,
-               deadline: deadline ? new Date(deadline) : existingTask.deadline,
-               estimatedHours: estimatedHours ? parseFloat(estimatedHours) : existingTask.estimatedHours,
-               actualHours: actualHours ? parseFloat(actualHours) : existingTask.actualHours,
-               updatedAt: new Date()
-          };
+          const updateData = {};
 
-          // Handle status changes
-          if (status) {
-               updateData.status = status;
+          if (status) updateData.status = status;
+          if (priority) updateData.priority = priority;
+          if (estimatedHours !== undefined) updateData.estimatedHours = parseFloat(estimatedHours);
+          if (actualHours !== undefined) updateData.actualHours = parseFloat(actualHours);
+          if (deadline) updateData.deadline = new Date(deadline);
+          if (reviewNotes) updateData.reviewNotes = reviewNotes;
 
-               // If approving a completed task
-               if (status === 'COMPLETED' && reviewApproved) {
-                    updateData.completedAt = new Date();
+          // If approving a completed task
+          if (status === 'COMPLETED' && reviewApproved) {
+               updateData.completedAt = new Date();
 
-                    // Create notification for developer
+               // Create notification for developer
+               if (existingTask.assigneeId) {
                     await prisma.notification.create({
                          data: {
                               type: 'TASK_COMPLETED',
@@ -223,27 +208,6 @@ export async function PATCH(request, { params }) {
                          }
                     });
                }
-          }
-
-          // Handle reassignment
-          if (assigneeId && assigneeId !== existingTask.assigneeId) {
-               updateData.assigneeId = assigneeId;
-
-               // Notify new assignee
-               await prisma.notification.create({
-                    data: {
-                         type: 'TASK_ASSIGNED',
-                         title: 'Task Reassigned',
-                         message: `Task "${existingTask.title}" has been reassigned to you`,
-                         link: `/developer/tasks/${taskId}`,
-                         userId: assigneeId,
-                         metadata: {
-                              taskId,
-                              taskTitle: existingTask.title,
-                              assignedBy: decoded.name
-                         }
-                    }
-               });
           }
 
           // Update task
@@ -282,7 +246,7 @@ export async function PATCH(request, { params }) {
                     details: {
                          taskTitle: existingTask.title,
                          changes: Object.keys(body),
-                         approved: reviewApproved
+                         approved: reviewApproved || false
                     },
                     userId: decoded.id
                }
@@ -295,84 +259,10 @@ export async function PATCH(request, { params }) {
           });
 
      } catch (error) {
-          console.error('Update task error:', error);
+          console.error('Update Task API Error:', error);
           return NextResponse.json(
-               { error: 'Failed to update task' },
+               { error: error.message || 'Failed to update task' },
                { status: 500 }
           );
      }
 }
-
-export async function DELETE(request, { params }) {
-     try {
-          const { taskId } = params;
-          const token = request.cookies.get('accessToken')?.value;
-
-          if (!token) {
-               return NextResponse.json(
-                    { error: 'Not authenticated' },
-                    { status: 401 }
-               );
-          }
-
-          const decoded = verifyAccessToken(token);
-          if (!decoded || decoded.role !== 'TEAM_LEAD') {
-               return NextResponse.json(
-                    { error: 'Access denied' },
-                    { status: 403 }
-               );
-          }
-
-          // Verify task belongs to team lead's project
-          const task = await prisma.task.findUnique({
-               where: { id: taskId },
-               include: {
-                    project: {
-                         select: { teamLeadId: true }
-                    }
-               }
-          });
-
-          if (!task || task.project.teamLeadId !== decoded.id) {
-               return NextResponse.json(
-                    { error: 'Access denied' },
-                    { status: 403 }
-               );
-          }
-
-          // Soft delete or actually delete? Let's do soft delete by archiving
-          await prisma.task.update({
-               where: { id: taskId },
-               data: {
-                    status: 'ARCHIVED'
-               }
-          });
-
-          // Log activity
-          await prisma.activityLog.create({
-               data: {
-                    action: 'DELETE_TASK',
-                    entityType: 'task',
-                    entityId: taskId,
-                    details: {
-                         taskId,
-                         reason: 'Deleted by team lead'
-                    },
-                    userId: decoded.id
-               }
-          });
-
-          return NextResponse.json({
-               success: true,
-               message: 'Task deleted successfully'
-          });
-
-     } catch (error) {
-          console.error('Delete task error:', error);
-          return NextResponse.json(
-               { error: 'Failed to delete task' },
-               { status: 500 }
-          );
-     }
-}
-

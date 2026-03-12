@@ -25,6 +25,7 @@ import { useTeamLeadApprovals } from '../../../../hooks/useTeamLeadApprovals';
 import { formatDistanceToNow, format } from 'date-fns';
 import Swal from 'sweetalert2';
 import Spinner from '../../../Components/common/Spinner';
+import RefreashBtn from '../../../Components/common/RefreashBtn';
 
 
 const ApprovalsPage = () => {
@@ -177,13 +178,7 @@ const ApprovalsPage = () => {
                          </p>
                     </div>
 
-                    <button
-                         onClick={() => refetch()}
-                         className="flex items-center gap-2 px-4 py-2 border border-border-strong rounded-lg text-text-body hover:bg-bg-subtle transition-colors"
-                    >
-                         <RefreshCw size={18} />
-                         Refresh
-                    </button>
+                    <RefreashBtn refetch={refetch} />
                </div>
 
                {/* Error Message */}

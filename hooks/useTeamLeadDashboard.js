@@ -4,6 +4,10 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export function useTeamLeadDashboard() {
      const [dashboardData, setDashboardData] = useState({
@@ -138,6 +142,103 @@ export function useTeamLeadDashboard() {
           }
      };
 
+
+     // hooks/useTeamLeadDashboard.js
+     // Add these functions inside your hook:
+
+     const assignTask = useCallback(async (taskId, developerId) => {
+          try {
+               setLoading(prev => ({ ...prev, assigning: true }));
+
+               const response = await fetch(`/api/team-lead/tasks/${taskId}/assign`, {
+                    method: 'PATCH',
+                    headers: {
+                         'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ developerId }),
+               });
+
+               const data = await response.json();
+
+               if (!response.ok) {
+                    throw new Error(data.error || 'Failed to assign task');
+               }
+
+               // Refresh the dashboard to show updated assignments
+               await fetchDashboardData();
+
+               await Swal.fire({
+                    title: 'Success!',
+                    text: 'Task assigned successfully',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+               });
+
+               return { success: true, task: data.task };
+          } catch (err) {
+               console.error('Assign task error:', err);
+
+               await Swal.fire({
+                    title: 'Error',
+                    text: err.message,
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c'
+               });
+
+               return { success: false, error: err.message };
+          } finally {
+               setLoading(prev => ({ ...prev, assigning: false }));
+          }
+     }, [fetchDashboardData]);
+
+     const unassignTask = useCallback(async (taskId) => {
+          try {
+               setLoading(prev => ({ ...prev, unassigning: true }));
+
+               const response = await fetch(`/api/team-lead/tasks/${taskId}/assign`, {
+                    method: 'PATCH',
+                    headers: {
+                         'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ developerId: null }), // null to unassign
+               });
+
+               const data = await response.json();
+
+               if (!response.ok) {
+                    throw new Error(data.error || 'Failed to unassign task');
+               }
+
+               // Refresh the dashboard
+               await fetchDashboardData();
+
+               await Swal.fire({
+                    title: 'Success!',
+                    text: 'Task unassigned successfully',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+               });
+
+               return { success: true };
+          } catch (err) {
+               console.error('Unassign task error:', err);
+
+               await Swal.fire({
+                    title: 'Error',
+                    text: err.message,
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c'
+               });
+
+               return { success: false, error: err.message };
+          } finally {
+               setLoading(prev => ({ ...prev, unassigning: false }));
+          }
+     }, [fetchDashboardData]);
+
+   
      return {
           ...dashboardData,
           loading,
@@ -146,6 +247,8 @@ export function useTeamLeadDashboard() {
           approveTask,
           requestRevision,
           reportIssue,
+          assignTask,
+          unassignTask,
           refetch: fetchDashboardData
      };
 }

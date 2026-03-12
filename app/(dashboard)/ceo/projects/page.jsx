@@ -424,7 +424,7 @@ function CEOProjectCard({ project, getRiskColor, getStatusColor }) {
                               <div className="flex items-center gap-2">
                                    <CheckCircle2 size={14} className="text-accent" />
                                    <span className="text-text-muted">Tasks:</span>
-                                   <span className="font-bold text-text-primary">
+                                   <span className="font-bold text-text-primary border border-accent/80">
                                         {project.metrics?.completedTasks || 0}/{project.metrics?.totalTasks || 0}
                                    </span>
                               </div>

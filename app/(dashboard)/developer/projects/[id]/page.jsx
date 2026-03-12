@@ -339,7 +339,7 @@ const ProjectDetailPage = ({ params }) => {
                                                                  <div className="space-y-2">
                                                                       <div className="flex justify-between text-xs">
                                                                            <span className="text-text-muted">Your progress</span>
-                                                                           <span className="font-bold text-text-primary">{milestone.progress?.toFixed(0)}%</span>
+                                                                           <span className="font-bold text-text-primary border border-accent/80">{milestone.progress?.toFixed(0)}%</span>
                                                                       </div>
                                                                       <div className="h-1.5 bg-bg-subtle rounded-full overflow-hidden">
                                                                            <div

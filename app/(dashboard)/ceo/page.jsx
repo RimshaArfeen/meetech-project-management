@@ -1024,7 +1024,7 @@ const ProjectCard = ({ project, getStatusColor, getRiskColor }) => {
                     <div className="mb-3">
                          <div className="flex justify-between text-xs mb-1">
                               <span className="text-text-muted">Progress</span>
-                              <span className="font-bold text-text-primary">{project.progress}%</span>
+                              <span className="font-bold text-text-primary border border-accent/80">{project.progress}%</span>
                          </div>
                          <div className="h-1.5 bg-border-subtle rounded-full overflow-hidden">
                               <motion.div

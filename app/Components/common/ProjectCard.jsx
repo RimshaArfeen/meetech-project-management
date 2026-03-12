@@ -57,9 +57,11 @@ const ProjectCard = ({ project, role }) => {
                          <div className="space-y-2">
                               <div className="flex justify-between text-xs">
                                    <span className="text-text-muted">Progress</span>
-                                   <span className="font-bold text-text-primary">{project.progress}%</span>
+                                   <span className="font-bold text-text-primary ">
+                                        {project.progress}%
+                                   </span>
                               </div>
-                              <div className="h-2 bg-bg-subtle rounded-full overflow-hidden">
+                              <div className="h-2 bg-bg-subtle rounded-full overflow-hidden border border-accent/80">
                                    <div
                                         className={`h-full ${getProgressColor(project.progress)} transition-all duration-500`}
                                         style={{ width: `${project.progress}%` }}
@@ -72,7 +74,7 @@ const ProjectCard = ({ project, role }) => {
                               <div className="flex items-center gap-2">
                                    <span className="text-text-muted">Tasks:</span>
                                    <span className="font-bold text-text-primary">
-                                        {project.completedTaskCount}/{project.taskCount}
+                                        {project.taskStats.completed}/ {project.taskStats.total}
                                    </span>
                               </div>
                               {project.isDelayed && (

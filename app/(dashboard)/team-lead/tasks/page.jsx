@@ -9,6 +9,9 @@ import BreakMilestoneModal from '../../../Components/modals/BreakMilestoneModal'
 import { useTeamLeadTasks } from '../../../../hooks/useTeamLeadTasks';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import Spinner from '../../../Components/common/Spinner';
+import RefreashBtn from '../../../Components/common/RefreashBtn';
+
 
 const TeamLeadTasksPage = () => {
      const router = useRouter();
@@ -171,14 +174,10 @@ const TeamLeadTasksPage = () => {
 
      if (loading && tasks.length === 0) {
           return (
-               <div className="min-h-screen bg-bg-page flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading team tasks...</p>
-                    </div>
-               </div>
+               <Spinner title="Tasks" />
           );
      }
+
 
      return (
           <>
@@ -195,13 +194,7 @@ const TeamLeadTasksPage = () => {
                          </div>
 
                          <div className="flex items-center gap-3">
-                              <button
-                                   onClick={() => refetch()}
-                                   className="p-2 border border-border-strong rounded-lg text-text-body hover:bg-bg-subtle transition-colors"
-                                   title="Refresh"
-                              >
-                                   <RefreshCw size={18} />
-                              </button>
+                              {/* <RefreashBtn   refetch={refetch} /> */}
                               <button
                                    onClick={() => setShowMilestoneModal(true)}
                                    className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-text-inverse rounded-lg text-ui font-bold shadow-lg shadow-accent/20 transition-all"

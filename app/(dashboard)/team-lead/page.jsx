@@ -23,7 +23,8 @@ import {
      Flag,
      UserCheck,
      ArrowUpRight,
-     X,
+     X, UserMinus, // Add this if not already imported
+     Search, 
      Loader
 } from 'lucide-react';
 import { useTeamLeadDashboard } from '../../../hooks/useTeamLeadDashboard';
@@ -31,6 +32,12 @@ import CreateTaskModal from '../../Components/team-lead/CreateTaskModal';
 import IssueReportModal from '../../Components/team-lead/IssueReportModal';
 import TaskApprovalModal from '../../Components/team-lead/TaskApprovalModal';
 import Spinner from '../../Components/common/Spinner';
+import TaskAssignmentModal from '../../Components/team-lead/TaskAssignmentModal';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
+
 
 const TeamLeadDashboard = () => {
      const [activeTab, setActiveTab] = useState('overview');
@@ -38,6 +45,9 @@ const TeamLeadDashboard = () => {
      const [showIssueModal, setShowIssueModal] = useState(false);
      const [selectedApproval, setSelectedApproval] = useState(null);
      const [selectedProject, setSelectedProject] = useState('all');
+     const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+     const [selectedTaskForAssignment, setSelectedTaskForAssignment] = useState(null);
+
 
      const {
           projects,
@@ -51,8 +61,13 @@ const TeamLeadDashboard = () => {
           approveTask,
           requestRevision,
           reportIssue,
-          refetch
+          refetch,
+          assignTask,    // ✅ Add this
+          unassignTask   // ✅ Add this
      } = useTeamLeadDashboard();
+
+
+     // console.log("TeamLead Tasks", developerTasks)
 
      if (loading) {
           return (
@@ -79,6 +94,11 @@ const TeamLeadDashboard = () => {
                </div>
           );
      }
+
+     const handleAssignClick = (task) => {
+          setSelectedTaskForAssignment(task);
+          setShowAssignmentModal(true);
+     };
 
      // Filter tasks based on selected project
      const filteredTasks = selectedProject === 'all'
@@ -161,9 +181,11 @@ const TeamLeadDashboard = () => {
                          <section>
                               <div className="flex items-center justify-between mb-4">
                                    <h2 className="text-subheading font-bold text-text-primary">Active Projects</h2>
-                                   <button className="text-sm text-accent hover:underline flex items-center gap-1">
+                                   <a href="/team-lead/projects"
+
+                                        className="text-sm text-accent hover:underline flex items-center gap-1">
                                         View All <ChevronRight size={16} />
-                                   </button>
+                                   </a>
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                    {projects.slice(0, 4).map(proj => (
@@ -185,15 +207,13 @@ const TeamLeadDashboard = () => {
                                              </span>
                                         </h2>
                                         <div className="flex gap-2">
-                                             <button
+                                             <a href="/team-lead/tasks"
                                                   onClick={() => setActiveTab('tasks')}
-                                                  className="text-xs font-medium px-3 py-1 rounded border border-border-default hover:bg-bg-subtle"
+                                                  className="text-xs font-medium px-3 py-1 rounded border border-border-default hover:bg-bg-subtle hover:border-accent transition-colors flex items-center gap-1"
                                              >
                                                   View All
-                                             </button>
-                                             <button className="text-xs font-medium px-3 py-1 rounded border border-border-default hover:bg-bg-subtle">
-                                                  Weekly Log
-                                             </button>
+                                             </a>
+
                                         </div>
                                    </div>
 
@@ -210,8 +230,11 @@ const TeamLeadDashboard = () => {
                                              </thead>
                                              <tbody className="divide-y divide-border-default">
                                                   {filteredTasks.slice(0, 5).map((item) => (
-                                                       <TaskRow key={item.id} task={item} />
-                                                  ))}
+                                                       <TaskRow
+                                                            key={item.id}
+                                                            task={item}
+                                                            onAssignClick={handleAssignClick}
+                                                       />))}
                                                   {filteredTasks.length === 0 && (
                                                        <tr>
                                                             <td colSpan="5" className="p-8 text-center text-text-muted">
@@ -355,36 +378,27 @@ const TeamLeadDashboard = () => {
                          task={selectedApproval}
                     />
                )}
+
+               {/* Assignment Modal */}
+               {showAssignmentModal && (
+                    <TaskAssignmentModal
+                         isOpen={showAssignmentModal}
+                         onClose={() => {
+                              setShowAssignmentModal(false);
+                              setSelectedTaskForAssignment(null);
+                         }}
+                         task={selectedTaskForAssignment}
+                         onAssign={assignTask}
+                         onUnassign={unassignTask}
+                    />
+               )}
+
           </div>
      );
 };
 
 // Internal Components
-const NavItem = ({ icon, label, active, onClick, badge, href }) => {
-     const Component = href ? 'a' : 'button';
 
-     return (
-          <Component
-               href={href}
-               onClick={onClick}
-               className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-ui transition-all ${active
-                    ? 'bg-accent text-text-inverse shadow-md'
-                    : 'text-text-muted hover:bg-bg-subtle hover:text-text-primary'
-                    }`}
-          >
-               <div className="flex items-center gap-3">
-                    {icon}
-                    <span className="font-medium">{label}</span>
-               </div>
-               {badge > 0 && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-accent/10 text-accent'
-                         }`}>
-                         {badge}
-                    </span>
-               )}
-          </Component>
-     );
-};
 
 const StatCard = ({ icon, label, value, total, bgColor }) => (
      <div className="bg-bg-surface border border-border-default rounded-xl p-5 shadow-sm">
@@ -433,7 +447,9 @@ const ProjectCard = ({ project }) => (
      </div>
 );
 
-const TaskRow = ({ task }) => {
+const TaskRow = ({ task, onAssignClick }) => {
+     const [showActions, setShowActions] = useState(false);
+
      const getPriorityColor = (priority) => {
           switch (priority) {
                case 'URGENT':
@@ -454,10 +470,24 @@ const TaskRow = ({ task }) => {
      };
 
      return (
-          <tr className="hover:bg-bg-subtle/50 transition-colors">
+          <tr className="hover:bg-bg-subtle/50 transition-colors relative">
                <td className="p-4">
-                    <p className="text-sm font-semibold text-text-primary">{task.task}</p>
-                    <p className="text-[10px] text-text-muted">{task.dev}</p>
+                    <p className="text-sm font-semibold text-text-primary">{task.task || task.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                         {task.dev ? (
+                              <>
+                                   <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center text-[10px] font-bold text-accent">
+                                        {task.dev?.charAt(0)}
+                                   </div>
+                                   <p className="text-[10px] text-text-muted">{task.dev}</p>
+                              </>
+                         ) : (
+                              <span className="text-[10px] text-red-500 flex items-center gap-1">
+                                   <AlertCircle size={10} />
+                                   Unassigned
+                              </span>
+                         )}
+                    </div>
                </td>
                <td className="p-4">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${getPriorityColor(task.priority)}`}>
@@ -466,7 +496,7 @@ const TaskRow = ({ task }) => {
                </td>
                <td className="p-4">
                     <span className={`text-xs font-medium ${getStatusColor(task.status)}`}>
-                         {task.status.replace('_', ' ')}
+                         {task.status?.replace('_', ' ')}
                     </span>
                </td>
                <td className="p-4">
@@ -477,10 +507,49 @@ const TaskRow = ({ task }) => {
                          </span>
                     </div>
                </td>
-               <td className="p-4 text-right">
-                    <button className="text-accent hover:text-accent-hover">
+               <td className="p-4 text-right relative">
+                    <button
+                         onClick={() => setShowActions(!showActions)}
+                         className="p-2 hover:bg-bg-surface rounded-lg transition-colors"
+                    >
                          <MoreVertical size={16} />
                     </button>
+
+                    {showActions && (
+                         <div className="absolute right-4 top-12 mt-2 w-48 bg-bg-surface border border-border-default rounded-lg shadow-lg z-10">
+                              <button
+                                   onClick={() => {
+                                        onAssignClick(task);
+                                        setShowActions(false);
+                                   }}
+                                   className="w-full text-left px-4 py-2 hover:bg-bg-subtle text-sm flex items-center gap-2"
+                              >
+                                   {task.dev ? (
+                                        <>
+                                             <UserPlus size={14} className="text-accent" />
+                                             Reassign Task
+                                        </>
+                                   ) : (
+                                        <>
+                                             <UserPlus size={14} className="text-accent" />
+                                             Assign to Developer
+                                        </>
+                                   )}
+                              </button>
+                              {task.assignee && (
+                                   <button
+                                        onClick={() => {
+                                             // Handle unassign directly
+                                             setShowActions(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 hover:bg-bg-subtle text-sm flex items-center gap-2 text-red-500"
+                                   >
+                                        <UserMinus size={14} />
+                                        Unassign
+                                   </button>
+                              )}
+                         </div>
+                    )}
                </td>
           </tr>
      );

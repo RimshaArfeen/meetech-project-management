@@ -1,9 +1,8 @@
-
 // hooks/useTeamLeadTasks.js
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-export function useTeamLeadTasks() {
+export function useTeamLeadTasks(projectId = null) {  // Make projectId optional
      const [tasks, setTasks] = useState([]);
      const [projects, setProjects] = useState([]);
      const [developers, setDevelopers] = useState([]);
@@ -28,58 +27,180 @@ export function useTeamLeadTasks() {
      const [sortOrder, setSortOrder] = useState('asc');
      const router = useRouter();
 
+     // Fetch all tasks for team lead
      const fetchTasks = useCallback(async () => {
           try {
                setLoading(true);
 
-               const params = new URLSearchParams();
-               if (filters.status !== 'all') params.append('status', filters.status);
-               if (filters.projectId) params.append('projectId', filters.projectId);
-               if (filters.assigneeId) params.append('assigneeId', filters.assigneeId);
-               if (filters.search) params.append('search', filters.search);
-               if (sortBy) params.append('sortBy', sortBy);
-               if (sortOrder) params.append('sortOrder', sortOrder);
+               // Build query parameters
+               const queryParams = new URLSearchParams();
+               if (filters.status && filters.status !== 'all') {
+                    queryParams.append('status', filters.status);
+               }
+               if (filters.projectId) {
+                    queryParams.append('projectId', filters.projectId);
+               }
+               if (filters.assigneeId) {
+                    queryParams.append('assigneeId', filters.assigneeId);
+               }
+               if (filters.search) {
+                    queryParams.append('search', filters.search);
+               }
+               if (sortBy) {
+                    queryParams.append('sortBy', sortBy);
+                    queryParams.append('sortOrder', sortOrder);
+               }
 
-               const response = await fetch(`/api/team-lead/tasks?${params.toString()}`);
+               // If projectId is provided, fetch only that project's tasks
+               const url = projectId
+                    ? `/api/team-lead/projects/${projectId}/tasks`
+                    : `/api/team-lead/tasks?${queryParams.toString()}`;
+
+               console.log('Fetching tasks from:', url);
+               const response = await fetch(url);
 
                if (!response.ok) {
                     if (response.status === 401) {
-                         router.push('/login');
+                         router.push('/auth/login');
                          return;
                     }
-                    throw new Error('Failed to fetch tasks');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch tasks');
                }
 
                const data = await response.json();
-               setTasks(data.tasks);
-               setProjects(data.filters?.projects || []);
-               setDevelopers(data.filters?.developers || []);
 
-               // Calculate stats
-               const now = new Date();
-               const newStats = {
-                    totalTasks: data.tasks.length,
-                    inReview: data.tasks.filter(t => t.status === 'REVIEW').length,
-                    overdue: data.tasks.filter(t =>
-                         t.deadline && new Date(t.deadline) < now && t.status !== 'COMPLETED'
+               // Handle different response structures
+               const taskList = data.tasks || data || [];
+               setTasks(taskList);
+
+               // Update stats
+               setStats({
+                    totalTasks: taskList.length,
+                    inReview: taskList.filter(t => t.status === 'REVIEW').length,
+                    overdue: taskList.filter(t =>
+                         t.status !== 'COMPLETED' &&
+                         t.deadline &&
+                         new Date(t.deadline) < new Date()
                     ).length,
-                    completed: data.tasks.filter(t => t.status === 'COMPLETED').length,
-                    notStarted: data.tasks.filter(t => t.status === 'NOT_STARTED').length,
-                    inProgress: data.tasks.filter(t => t.status === 'IN_PROGRESS').length,
-                    blocked: data.tasks.filter(t => t.status === 'BLOCKED').length
-               };
-               setStats(newStats);
+                    completed: taskList.filter(t => t.status === 'COMPLETED').length,
+                    notStarted: taskList.filter(t => t.status === 'NOT_STARTED').length,
+                    inProgress: taskList.filter(t => t.status === 'IN_PROGRESS').length,
+                    blocked: taskList.filter(t => t.status === 'BLOCKED').length
+               });
 
                setError(null);
           } catch (err) {
+               console.error('Error fetching tasks:', err);
                setError(err.message);
-               console.error('Tasks fetch error:', err);
           } finally {
                setLoading(false);
           }
-     }, [filters, sortBy, sortOrder, router]);
+     }, [projectId, filters.status, filters.projectId, filters.assigneeId, filters.search, sortBy, sortOrder, router]);
 
-     // Get single task details
+     // Fetch projects for dropdown
+     const fetchProjects = useCallback(async () => {
+          try {
+               const response = await fetch('/api/team-lead/projects');
+               if (response.ok) {
+                    const data = await response.json();
+                    setProjects(data.projects || []);
+               }
+          } catch (err) {
+               console.error('Error fetching projects:', err);
+          }
+     }, []);
+
+     // Fetch developers for dropdown
+     const fetchDevelopers = useCallback(async () => {
+          try {
+               const response = await fetch('/api/team-lead/developers');
+               if (response.ok) {
+                    const data = await response.json();
+                    setDevelopers(data.developers || []);
+               }
+          } catch (err) {
+               console.error('Error fetching developers:', err);
+          }
+     }, []);
+
+     // Initial fetch
+     useEffect(() => {
+          fetchTasks();
+          fetchProjects();
+          fetchDevelopers();
+     }, [fetchTasks, fetchProjects, fetchDevelopers]);
+
+     // Update tasks when filters change
+     useEffect(() => {
+          fetchTasks();
+     }, [filters.status, filters.projectId, filters.assigneeId, filters.search, sortBy, sortOrder]);
+
+     // ... rest of your functions (createTask, assignTask, approveTask, etc.)
+
+     const createTask = async (taskData) => {
+          try {
+               const response = await fetch(`/api/team-lead/projects/${taskData.projectId}/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskData)
+               });
+
+               if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to create task');
+               }
+
+               const newTask = await response.json();
+               await fetchTasks(); // Refresh the list
+               return newTask;
+          } catch (err) {
+               console.error('Error creating task:', err);
+               throw err;
+          }
+     };
+
+     const assignTask = async (taskId, developerId) => {
+          try {
+               const response = await fetch(`/api/team-lead/tasks/${taskId}/assign`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ developerId })
+               });
+
+               if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to assign task');
+               }
+
+               await fetchTasks(); // Refresh the list
+               return await response.json();
+          } catch (err) {
+               console.error('Error assigning task:', err);
+               throw err;
+          }
+     };
+
+     const approveTask = async (taskId) => {
+          try {
+               const response = await fetch(`/api/team-lead/tasks/${taskId}/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+               });
+
+               if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to approve task');
+               }
+
+               await fetchTasks(); // Refresh the list
+               return await response.json();
+          } catch (err) {
+               console.error('Error approving task:', err);
+               throw err;
+          }
+     };
+
      const getTask = useCallback(async (taskId) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}`);
@@ -96,15 +217,16 @@ export function useTeamLeadTasks() {
           }
      }, []);
 
-     // Update task (assign, edit, approve)
-     const updateTask = useCallback(async (taskId, updates) => {
+     // In hooks/useTeamLeadTasks.js - update these functions
+
+     const updateTaskStatus = useCallback(async (status, reviewApproved = false) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}`, {
                     method: 'PATCH',
                     headers: {
                          'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(updates),
+                    body: JSON.stringify({ status, reviewApproved }),
                });
 
                const data = await response.json();
@@ -113,17 +235,38 @@ export function useTeamLeadTasks() {
                     throw new Error(data.error || 'Failed to update task');
                }
 
-               // Refresh tasks list
-               await fetchTasks();
-
+               await fetchTask();
                return { success: true, task: data.task };
-          } catch (err) {
-               console.error('Task update error:', err);
-               return { success: false, error: err.message };
+          } catch (error) {
+               console.error('Failed to update task:', error);
+               return { success: false, error: error.message };
           }
-     }, [fetchTasks]);
+     }, [taskId, fetchTasks]);
 
-     // Delete task
+     const addComment = useCallback(async (content) => {
+          try {
+               const response = await fetch(`/api/team-lead/tasks/${taskId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                         'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content }),
+               });
+
+               const data = await response.json();
+
+               if (!response.ok) {
+                    throw new Error(data.error || 'Failed to add comment');
+               }
+
+               await fetchTask();
+               return { success: true, comment: data.comment };
+          } catch (error) {
+               console.error('Failed to add comment:', error);
+               return { success: false, error: error.message };
+          }
+     }, [taskId, fetchTasks]);
+
      const deleteTask = useCallback(async (taskId) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}`, {
@@ -144,7 +287,6 @@ export function useTeamLeadTasks() {
           }
      }, [fetchTasks]);
 
-     // Report issue to PM
      const reportIssue = useCallback(async (taskId, issueData) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}/report`, {
@@ -168,10 +310,6 @@ export function useTeamLeadTasks() {
           }
      }, []);
 
-     useEffect(() => {
-          fetchTasks();
-     }, [fetchTasks]);
-
      return {
           tasks,
           projects,
@@ -185,10 +323,13 @@ export function useTeamLeadTasks() {
           setSortBy,
           sortOrder,
           setSortOrder,
+          createTask,
+          assignTask,
+          approveTask,
           getTask,
-          updateTask,
+          updateTaskStatus,
           deleteTask,
-          reportIssue,
+          reportIssue, addComment,
           refetch: fetchTasks
      };
 }
@@ -226,7 +367,6 @@ export function useTeamLeadTask(taskId) {
           }
      }, [taskId, router]);
 
-     // Update task status
      const updateTaskStatus = useCallback(async (status, reviewApproved = false) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}`, {
@@ -248,7 +388,6 @@ export function useTeamLeadTask(taskId) {
           }
      }, [taskId, fetchTask]);
 
-     // Add comment
      const addComment = useCallback(async (content) => {
           try {
                const response = await fetch(`/api/team-lead/tasks/${taskId}/comments`, {
