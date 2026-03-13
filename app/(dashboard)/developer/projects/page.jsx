@@ -6,12 +6,15 @@ import ProjectCard from '../../../Components/common/ProjectCard';
 import { Plus, Search, Filter, LayoutGrid, List, X } from 'lucide-react';
 import { useDeveloperProjects } from '../../../../hooks/useDeveloperProjects';
 import { useRouter } from 'next/navigation';
+import Spinner from '../../../Components/common/Spinner';
+
 
 const ProjectsDashboard = () => {
      const router = useRouter();
      const { projects, loading, error, filters, setFilters } = useDeveloperProjects();
      const [searchInput, setSearchInput] = useState('');
      const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+console.log("Developers Projects", projects)
 
      // Debounce search input
      useEffect(() => {
@@ -32,14 +35,7 @@ const ProjectsDashboard = () => {
      };
 
      if (loading && projects.length === 0) {
-          return (
-               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading your projects...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Projects..." />;
      }
 
      return (

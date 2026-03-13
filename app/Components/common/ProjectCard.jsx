@@ -72,9 +72,16 @@ const ProjectCard = ({ project, role }) => {
                          {/* Task Stats */}
                          <div className="flex justify-between items-center text-sm">
                               <div className="flex items-center gap-2">
-                                   <span className="text-text-muted">Tasks:</span>
+                                    <span className="text-text-muted">Tasks:</span>
                                    <span className="font-bold text-text-primary">
-                                        {project.taskStats.completed}/ {project.taskStats.total}
+                                             {project.taskStats ? (
+                                                  <>
+                                                       {project.taskStats.completed} / {project.taskStats.total}
+                                                  </>
+                                             ) : (
+                                                  /* Fix: No curly braces needed here for the logic, just for the text concatenation */
+                                                  project.completedTaskCount + " / " + project.taskCount
+                                             )}
                                    </span>
                               </div>
                               {project.isDelayed && (

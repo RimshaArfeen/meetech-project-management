@@ -25,6 +25,9 @@ import {
 import Link from 'next/link';
 import { useDeveloperProject } from '../../../../../hooks/useDeveloperProjects';
 import { useRouter } from 'next/navigation';
+import Spinner from "../../../../Components/common/Spinner";
+import Swal from 'sweetalert2';
+
 
 const ProjectDetailPage = ({ params }) => {
      const unwrappedParams = React.use(params);
@@ -33,9 +36,21 @@ const ProjectDetailPage = ({ params }) => {
           useDeveloperProject(unwrappedParams.id);
      const [updatingTask, setUpdatingTask] = useState(null);
 
+
      const handleTaskStatusUpdate = async (taskId, newStatus) => {
           try {
                setUpdatingTask(taskId);
+
+               // Show loading alert
+               Swal.fire({
+                    title: 'Updating Task...',
+                    text: 'Please wait',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                         Swal.showLoading();
+                    }
+               });
+
                const response = await fetch(`/api/developer/tasks/${taskId}/status`, {
                     method: 'PATCH',
                     headers: {
@@ -44,11 +59,75 @@ const ProjectDetailPage = ({ params }) => {
                     body: JSON.stringify({ status: newStatus }),
                });
 
-               if (response.ok) {
-                    refetch(); // Refresh project data
+               const data = await response.json();
+
+               // Close loading alert
+               Swal.close();
+
+               if (!response.ok) {
+                    // Show error alert
+                    await Swal.fire({
+                         title: 'Error',
+                         text: data.error || 'Failed to update task',
+                         icon: 'error',
+                         confirmButtonColor: '#b91c1c',
+                         confirmButtonText: 'OK'
+                    });
+                    return;
                }
+
+               // Show success alert based on status change
+               let successMessage = '';
+               let successIcon = 'success';
+
+               switch (newStatus) {
+                    case 'COMPLETED':
+                         successMessage = 'Task marked as completed! Great job! 🎉';
+                         break;
+                    case 'IN_PROGRESS':
+                         successMessage = 'Task status updated to In Progress. Keep going! 💪';
+                         break;
+                    case 'REVIEW':
+                         successMessage = 'Task sent for review. Your team lead has been notified. 👀';
+                         break;
+                    case 'BLOCKED':
+                         successMessage = 'Task marked as blocked. Project manager has been notified. ⚠️';
+                         break;
+                    case 'NOT_STARTED':
+                         successMessage = 'Task status updated successfully';
+                         break;
+                    default:
+                         successMessage = 'Task status updated successfully';
+               }
+
+               await Swal.fire({
+                    title: 'Updated!',
+                    text: successMessage,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end'
+               });
+
+               // Refresh project data to show updated status
+               await refetch();
+
           } catch (error) {
                console.error('Failed to update task:', error);
+
+               // Close any existing alert
+               Swal.close();
+
+               // Show error alert
+               await Swal.fire({
+                    title: 'Network Error',
+                    text: 'Could not connect to server. Please check your connection.',
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c',
+                    confirmButtonText: 'Try Again'
+               });
           } finally {
                setUpdatingTask(null);
           }
@@ -77,14 +156,7 @@ const ProjectDetailPage = ({ params }) => {
      };
 
      if (loading) {
-          return (
-               <div className="min-h-screen bg-bg-page p-page-x pb-32 md:py-page-y flex items-center justify-center">
-                    <div className="text-center">
-                         <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4"></div>
-                         <p className="text-text-muted">Loading project details...</p>
-                    </div>
-               </div>
-          );
+          return <Spinner title="Project Details..." />;
      }
 
      if (error || !project) {
