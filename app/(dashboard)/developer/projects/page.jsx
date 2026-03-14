@@ -51,13 +51,6 @@ console.log("Developers Projects", projects)
                               </p>
                          </div>
 
-                         <button
-                              onClick={() => router.push('/developer/projects/new')}
-                              className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-text-inverse px-6 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-accent/20 active:scale-95 transition-all"
-                         >
-                              <Plus size={20} />
-                              Create Project
-                         </button>
                     </div>
 
                     {/* Error Message */}

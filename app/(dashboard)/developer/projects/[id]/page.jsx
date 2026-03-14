@@ -314,7 +314,7 @@ const ProjectDetailPage = ({ params }) => {
                                         >
                                              Milestones ({project.milestones?.length || 0})
                                              {activeTab === 'milestones' && (
-                                                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />
+                                                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent " />
                                              )}
                                         </button>
                                         <button
@@ -411,9 +411,9 @@ const ProjectDetailPage = ({ params }) => {
                                                                  <div className="space-y-2">
                                                                       <div className="flex justify-between text-xs">
                                                                            <span className="text-text-muted">Your progress</span>
-                                                                           <span className="font-bold text-text-primary border border-accent/80">{milestone.progress?.toFixed(0)}%</span>
+                                                                           <span className="font-bold text-text-primary  ">{milestone.progress?.toFixed(0)}%</span>
                                                                       </div>
-                                                                      <div className="h-1.5 bg-bg-subtle rounded-full overflow-hidden">
+                                                                      <div className="h-1.5 bg-bg-subtle rounded-full overflow-hidden  border border-accent/80">
                                                                            <div
                                                                                 className="h-full bg-accent transition-all"
                                                                                 style={{ width: `${milestone.progress || 0}%` }}

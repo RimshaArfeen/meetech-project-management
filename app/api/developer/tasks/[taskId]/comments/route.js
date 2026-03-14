@@ -1,5 +1,3 @@
-
-
 // app/api/developer/tasks/[taskId]/comments/route.js
 import { NextResponse } from 'next/server';
 import { verifyAccessToken } from '../../../../../../lib/auth/jwt';
@@ -7,7 +5,8 @@ import prisma from '../../../../../../lib/prisma';
 
 export async function POST(request, { params }) {
      try {
-          const { taskId } = params;
+          // ✅ IMPORTANT: Await the params
+          const { taskId } = await params;
           const { content, parentId } = await request.json();
 
           // Get token from cookies
@@ -144,7 +143,8 @@ export async function POST(request, { params }) {
 
 export async function GET(request, { params }) {
      try {
-          const { taskId } = params;
+          // ✅ IMPORTANT: Await the params here too
+          const { taskId } = await params;
 
           // Get token from cookies
           const token = request.cookies.get('accessToken')?.value;

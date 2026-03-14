@@ -1,3 +1,5 @@
+
+
 // hooks/useTeamLeadTasks.js
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -5,6 +7,8 @@ import { useRouter } from 'next/navigation';
 // ============================================
 // HOOK 1: For multiple tasks (list view)
 // ============================================
+// hooks/useTeamLeadTasks.js
+
 export function useTeamLeadTasks(projectId = null) {
      const [tasks, setTasks] = useState([]);
      const [projects, setProjects] = useState([]);
@@ -30,45 +34,12 @@ export function useTeamLeadTasks(projectId = null) {
      const [sortOrder, setSortOrder] = useState('asc');
      const router = useRouter();
 
-     // In useTeamLeadTasks.js - update fetchProjects and fetchDevelopers
-
-     const fetchProjects = useCallback(async () => {
-          try {
-               console.log('Fetching projects for team lead...');
-               const response = await fetch('/api/team-lead/projects');
-               if (response.ok) {
-                    const data = await response.json();
-                    console.log('Projects fetched:', data.projects);
-                    setProjects(data.projects || []);
-               } else {
-                    console.error('Failed to fetch projects:', response.status);
-               }
-          } catch (err) {
-               console.error('Error fetching projects:', err);
-          }
-     }, []);
-
-     const fetchDevelopers = useCallback(async () => {
-          try {
-               console.log('Fetching developers for team lead...');
-               const response = await fetch('/api/team-lead/developers');
-               if (response.ok) {
-                    const data = await response.json();
-                    console.log('Developers fetched:', data.developers);
-                    setDevelopers(data.developers || []);
-               } else {
-                    console.error('Failed to fetch developers:', response.status);
-               }
-          } catch (err) {
-               console.error('Error fetching developers:', err);
-          }
-     }, []);
-
+     // ✅ FIX: Move fetchTasks outside of useEffect and memoize properly
      const fetchTasks = useCallback(async () => {
           try {
                setLoading(true);
 
-               // Build query parameters
+               // Build query parameters based on filters
                const queryParams = new URLSearchParams();
                if (filters.status && filters.status !== 'all') {
                     queryParams.append('status', filters.status);
@@ -92,6 +63,7 @@ export function useTeamLeadTasks(projectId = null) {
                     ? `/api/team-lead/projects/${projectId}/tasks`
                     : `/api/team-lead/tasks?${queryParams.toString()}`;
 
+               console.log('Fetching tasks from:', url);
                const response = await fetch(url);
 
                if (!response.ok) {
@@ -132,6 +104,46 @@ export function useTeamLeadTasks(projectId = null) {
                setLoading(false);
           }
      }, [projectId, filters.status, filters.projectId, filters.assigneeId, filters.search, sortBy, sortOrder, router]);
+
+     const fetchProjects = useCallback(async () => {
+          try {
+               const response = await fetch('/api/team-lead/projects');
+               if (response.ok) {
+                    const data = await response.json();
+                    setProjects(data.projects || []);
+               }
+          } catch (err) {
+               console.error('Error fetching projects:', err);
+          }
+     }, []);
+
+     const fetchDevelopers = useCallback(async () => {
+          try {
+               const response = await fetch('/api/team-lead/developers');
+               if (response.ok) {
+                    const data = await response.json();
+                    setDevelopers(data.developers || []);
+               }
+          } catch (err) {
+               console.error('Error fetching developers:', err);
+          }
+     }, []);
+
+     // ✅ FIX: Only fetch tasks on initial mount and when filters change
+     useEffect(() => {
+          fetchTasks();
+     }, [fetchTasks]); // ✅ fetchTasks is now memoized, so this is safe
+
+     // Fetch projects and developers only once
+     useEffect(() => {
+          fetchProjects();
+          fetchDevelopers();
+     }, [fetchProjects, fetchDevelopers]); // ✅ These are also memoized
+
+     // Update tasks when filters change
+     useEffect(() => {
+          fetchTasks();
+     }, [filters.status, filters.projectId, filters.assigneeId, filters.search, sortBy, sortOrder]);
 
      const createTask = async (taskData) => {
           try {
@@ -253,8 +265,7 @@ export function useTeamLeadTasks(projectId = null) {
                const data = await response.json();
 
                if (!response.ok) {
-                    // Throw with the error message from the server
-                    throw new Error(data.error || `Failed to report issue (${response.status})`);
+                    throw new Error(data.error || 'Failed to report issue');
                }
 
                return { success: true, message: data.message };
@@ -263,14 +274,6 @@ export function useTeamLeadTasks(projectId = null) {
                return { success: false, error: err.message };
           }
      }, []);
-
-
-     // Initial fetch
-     useEffect(() => {
-          fetchTasks();
-          fetchProjects();
-          fetchDevelopers();
-     }, [fetchTasks]);
 
      return {
           tasks,
@@ -291,6 +294,7 @@ export function useTeamLeadTasks(projectId = null) {
           updateTask,
           deleteTask,
           reportIssue,
+          fetchTasks, // ✅ Now properly exported
           refetch: fetchTasks
      };
 }

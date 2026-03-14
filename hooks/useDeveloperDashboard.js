@@ -111,6 +111,7 @@ export function useDeveloperDashboard() {
 
      // Submit all completed tasks for review
      const submitAllForReview = useCallback(async () => {
+          // Get all tasks that are currently 'Completed' (excluding the currently selected one if needed)
           const completedTasks = data.tasks.filter(
                t => t.status === 'Completed' && t.id !== selectedTask?.id
           );
@@ -119,22 +120,30 @@ export function useDeveloperDashboard() {
                return { success: false, error: 'No completed tasks to review' };
           }
 
-          const results = await Promise.all(
-               completedTasks.map(task => submitForReview(task.id, 'Auto-submitted from dashboard'))
+          // Use allSettled to collect successes and failures
+          const results = await Promise.allSettled(
+               completedTasks.map(task =>
+                    submitForReview(task.id, 'Auto-submitted from dashboard')
+               )
           );
 
-          const failed = results.filter(r => !r.success);
+          const succeeded = results.filter(r => r.status === 'fulfilled' && r.value?.success).length;
+          const failed = results.filter(r => r.status === 'rejected' || !r.value?.success);
 
-          if (failed.length > 0) {
+          if (failed.length === 0) {
+               return {
+                    success: true,
+                    message: `All ${succeeded} tasks submitted for review`
+               };
+          } else {
                return {
                     success: false,
-                    error: `${failed.length} tasks failed to submit`
+                    error: `${failed.length} task(s) failed to submit. Please try again.`
                };
           }
-
-          return { success: true, message: 'All completed tasks submitted for review' };
      }, [data.tasks, selectedTask, submitForReview]);
 
+     
      useEffect(() => {
           fetchDashboardData();
      }, [fetchDashboardData]);

@@ -66,7 +66,7 @@ const TaskCard = ({ role, task }) => {
 
      return (
           <Link href={`/${role}/tasks/${task.id}`}>
-               <div className="group bg-bg-surface border border-border-default rounded-xl p-5 hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
+               <div className="group h-[18rem] bg-bg-surface border border-border-default rounded-xl p-5 hover:shadow-xl hover:border-accent/30 transition-all cursor-pointer">
                     <div className="space-y-4">
                          {/* Header with Priority */}
                          <div className="flex items-start justify-between">

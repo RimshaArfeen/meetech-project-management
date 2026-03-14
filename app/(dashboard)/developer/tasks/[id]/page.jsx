@@ -1,6 +1,3 @@
-
-
-
 // app/(dashboard)/developer/tasks/[id]/page.jsx
 'use client';
 import React, { useState, useEffect } from 'react';
@@ -26,14 +23,15 @@ import Link from 'next/link';
 import { useDeveloperTask } from '../../../../../hooks/useDeveloperTasks';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import Spinner from '../../../../../Components/common/Spinner';
+import Spinner from '../../../../Components/common/Spinner';
 
 
 const TaskDetailPage = ({ params }) => {
      const unwrappedParams = React.use(params);
+     const taskId = unwrappedParams.id; // ✅ Extract taskId once
 
      const router = useRouter();
-     const { task, loading, error, refetch } = useDeveloperTask(unwrappedParams.id);
+     const { task, loading, error, refetch } = useDeveloperTask(taskId); // ✅ Use taskId
      const [status, setStatus] = useState('');
      const [comment, setComment] = useState('');
      const [comments, setComments] = useState([]);
@@ -66,7 +64,8 @@ const TaskDetailPage = ({ params }) => {
      const handleStatusChange = async (newStatus) => {
           try {
                setUpdating(true);
-               const response = await fetch(`/api/developer/tasks/${params.id}/status`, {
+               // ✅ Use taskId instead of params.id
+               const response = await fetch(`/api/developer/tasks/${taskId}/status`, {
                     method: 'PATCH',
                     headers: {
                          'Content-Type': 'application/json',
@@ -82,6 +81,9 @@ const TaskDetailPage = ({ params }) => {
                     setShowReviewModal(false);
                     setReviewNotes('');
                     refetch();
+               } else {
+                    const error = await response.json();
+                    console.error('Failed to update status:', error);
                }
           } catch (error) {
                console.error('Failed to update status:', error);
@@ -94,7 +96,8 @@ const TaskDetailPage = ({ params }) => {
           if (!comment.trim()) return;
 
           try {
-               const response = await fetch(`/api/developer/tasks/${params.id}/comments`, {
+               // ✅ Use taskId instead of params.id
+               const response = await fetch(`/api/developer/tasks/${taskId}/comments`, {
                     method: 'POST',
                     headers: {
                          'Content-Type': 'application/json',
@@ -107,6 +110,9 @@ const TaskDetailPage = ({ params }) => {
                     setComments([data.comment, ...comments]);
                     setComment('');
                     refetch();
+               } else {
+                    const error = await response.json();
+                    console.error('Failed to add comment:', error);
                }
           } catch (error) {
                console.error('Failed to add comment:', error);
@@ -114,7 +120,7 @@ const TaskDetailPage = ({ params }) => {
      };
 
      if (loading) {
-          return  <Spinner title="Tasks"/>
+          return <Spinner title="Tasks" />
      }
 
      if (error || !task) {
@@ -152,7 +158,7 @@ const TaskDetailPage = ({ params }) => {
                                    task.status === 'REVIEW' ? 'bg-yellow-500' :
                                         task.status === 'BLOCKED' ? 'bg-red-500' :
                                              'bg-slate-500'
-                              }`} />{task.status}
+                              }`} />
                     </div>
                     <div className="flex items-center gap-3">
                          <button className="text-xs font-bold text-accent px-3 py-1.5 rounded-lg hover:bg-accent-muted transition-colors">
@@ -199,7 +205,7 @@ const TaskDetailPage = ({ params }) => {
                <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
 
                     {/* LEFT COLUMN: Task Details */}
-                    <main className="flex-1 overflow-y-auto chat-scroll  p-8 chat-scroll">
+                    <main className="flex-1 overflow-y-auto chat-scroll p-8">
                          <div className="max-w-4xl mx-auto space-y-10">
 
                               {/* Title & Metadata */}
@@ -249,7 +255,7 @@ const TaskDetailPage = ({ params }) => {
                                              Attachments ({task.attachments.length})
                                         </h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                             {task.attachments.map((file, i) => (
+                                             {task.attachments.map((file) => (
                                                   <a
                                                        key={file.id}
                                                        href={file.url}
@@ -339,9 +345,9 @@ const TaskDetailPage = ({ params }) => {
                                              className="w-full bg-transparent border-none focus:ring-0 p-3 text-sm min-h-[100px] text-text-body outline-none resize-none"
                                         />
                                         <div className="flex items-center justify-between p-2 border-t border-border-subtle">
-                                             <button className="p-2 text-text-muted hover:text-accent rounded-lg">
+                                             {/* <button className="p-2 text-text-muted hover:text-accent rounded-lg">
                                                   <Paperclip size={18} />
-                                             </button>
+                                             </button> */}
                                              <button
                                                   onClick={handleAddComment}
                                                   disabled={!comment.trim()}
@@ -356,7 +362,7 @@ const TaskDetailPage = ({ params }) => {
                     </main>
 
                     {/* RIGHT SIDEBAR: Actions & Metadata */}
-                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto chat-scroll ">
+                    <aside className="w-full lg:w-80 border-l border-border-default bg-bg-surface p-6 space-y-8 overflow-y-auto">
 
                          {/* Status Control */}
                          <div className="space-y-4">
