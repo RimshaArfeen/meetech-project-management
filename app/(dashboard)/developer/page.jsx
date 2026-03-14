@@ -107,7 +107,121 @@ const DeveloperDashboard = () => {
      const [viewMode, setViewMode] = useState('grid');
      const [showTaskStats, setShowTaskStats] = useState(true);
      const [selectedTimeRange, setSelectedTimeRange] = useState('week');
+     // Add this state near your other useState declarations
+     const [showWeeklyStats, setShowWeeklyStats] = useState(false);
 
+     // Add this modal component before the return statement
+     const WeeklyStatsModal = ({ isOpen, onClose, weeklyGoal, tasks }) => {
+          if (!isOpen) return null;
+
+          // Filter tasks completed this week
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+          const completedThisWeek = tasks.filter(task => {
+               // Assuming task has a completedAt field
+               if (task.status === 'COMPLETED' && task.completedAt) {
+                    const completedDate = new Date(task.completedAt);
+                    return completedDate >= oneWeekAgo;
+               }
+               return false;
+          });
+
+          return (
+               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                         <div className="sticky top-0 bg-bg-surface border-b border-border-default p-6 flex justify-between items-center">
+                              <h2 className="text-xl font-bold text-text-primary">Weekly Task Summary</h2>
+                              <button onClick={onClose} className="p-2 hover:bg-bg-subtle rounded-lg">
+                                   <X size={20} />
+                              </button>
+                         </div>
+
+                         <div className="p-6 space-y-6">
+                              {/* Stats Overview */}
+                              <div className="grid grid-cols-3 gap-4">
+                                   <div className="bg-bg-subtle p-4 rounded-lg text-center">
+                                        <p className="text-2xl font-bold text-accent">{weeklyGoal.completed}</p>
+                                        <p className="text-xs text-text-muted">Completed</p>
+                                   </div>
+                                   <div className="bg-bg-subtle p-4 rounded-lg text-center">
+                                        <p className="text-2xl font-bold text-accent-secondary">{weeklyGoal.target}</p>
+                                        <p className="text-xs text-text-muted">Weekly Target</p>
+                                   </div>
+                                   <div className="bg-bg-subtle p-4 rounded-lg text-center">
+                                        <p className="text-2xl font-bold text-green-500">{weeklyGoal.percentage}%</p>
+                                        <p className="text-xs text-text-muted">Achievement</p>
+                                   </div>
+                              </div>
+
+                              {/* Completed Tasks List */}
+                              <div>
+                                   <h3 className="text-sm font-bold text-text-primary mb-3">Tasks Completed This Week</h3>
+                                   {completedThisWeek.length > 0 ? (
+                                        <div className="space-y-2">
+                                             {completedThisWeek.map(task => (
+                                                  <div key={task.id} className="flex items-center justify-between p-3 bg-bg-subtle rounded-lg">
+                                                       <div className="flex items-center gap-3">
+                                                            <CheckCircle size={16} className="text-green-500" />
+                                                            <div>
+                                                                 <p className="text-sm font-medium text-text-primary">{task.task}</p>
+                                                                 <p className="text-xs text-text-muted">{task.project}</p>
+                                                            </div>
+                                                       </div>
+                                                       <span className="text-xs text-text-muted">
+                                                            {task.completedAt ? new Date(task.completedAt).toLocaleDateString() : 'This week'}
+                                                       </span>
+                                                  </div>
+                                             ))}
+                                        </div>
+                                   ) : (
+                                        <p className="text-center text-text-muted py-4">No tasks completed this week</p>
+                                   )}
+                              </div>
+
+                              {/* Daily Breakdown Chart */}
+                              <div>
+                                   <h3 className="text-sm font-bold text-text-primary mb-3">Daily Breakdown</h3>
+                                   <div className="h-48">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                             <BarChart data={getDailyBreakdown(tasks)}>
+                                                  <XAxis dataKey="day" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                                  <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                                  <Tooltip />
+                                                  <Bar dataKey="completed" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                             </BarChart>
+                                        </ResponsiveContainer>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          );
+     };
+
+     // Helper function for daily breakdown
+     const getDailyBreakdown = (tasks) => {
+          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+          const completedThisWeek = tasks.filter(task =>
+               task.status === 'COMPLETED' &&
+               task.completedAt &&
+               new Date(task.completedAt) >= oneWeekAgo
+          );
+
+          const dailyCounts = days.map((day, index) => {
+               const count = completedThisWeek.filter(task => {
+                    const taskDate = new Date(task.completedAt);
+                    return taskDate.getDay() === index;
+               }).length;
+
+               return { day, completed: count };
+          });
+
+          return dailyCounts;
+     };
 
      console.log("Developer Tasks", tasks)
 
@@ -237,17 +351,65 @@ const DeveloperDashboard = () => {
      };
 
      const getWeeklyProgressData = () => {
-          // Generate sample weekly data based on actual tasks
-          const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-          const completedByDay = {};
+          // Get current date
+          const today = new Date();
 
-          // This would ideally come from your actual data
-          // For now, we'll create sample data
-          return days.map(day => ({
-               day,
-               completed: Math.floor(Math.random() * 5) + 1,
-               inProgress: Math.floor(Math.random() * 3) + 1
-          }));
+          // Create array of last 7 days
+          const last7Days = [];
+          for (let i = 6; i >= 0; i--) {
+               const date = new Date(today);
+               date.setDate(today.getDate() - i);
+               last7Days.push({
+                    day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                    date: date.toISOString().split('T')[0],
+                    fullDate: date
+               });
+          }
+
+          // Process tasks data
+          return last7Days.map(dayInfo => {
+               const dayStart = new Date(dayInfo.fullDate);
+               dayStart.setHours(0, 0, 0, 0);
+
+               const dayEnd = new Date(dayInfo.fullDate);
+               dayEnd.setHours(23, 59, 59, 999);
+
+               // Count tasks completed on this day
+               const completed = tasks.filter(task => {
+                    if (task.status !== 'COMPLETED') return false;
+
+                    // Try different possible date fields
+                    const completedDate = task.completedAt || task.completedDate || task.updatedAt;
+                    if (!completedDate) return false;
+
+                    const taskDate = new Date(completedDate);
+                    return taskDate >= dayStart && taskDate <= dayEnd;
+               }).length;
+
+               // Count tasks that were in progress during this day
+               const inProgress = tasks.filter(task => {
+                    if (task.status !== 'IN_PROGRESS') return false;
+
+                    // Check if task was active on this day
+                    const createdDate = task.createdAt ? new Date(task.createdAt) : null;
+                    const updatedDate = task.updatedAt ? new Date(task.updatedAt) : null;
+
+                    // Task was created before or on this day
+                    const wasCreatedBefore = createdDate && createdDate <= dayEnd;
+
+                    // Task hasn't been completed yet (or completed after this day)
+                    const notCompletedYet = !task.completedAt || new Date(task.completedAt) > dayStart;
+
+                    return wasCreatedBefore && notCompletedYet;
+               }).length;
+
+               return {
+                    day: dayInfo.day,
+                    completed,
+                    inProgress,
+                    date: dayInfo.date
+               };
+          });
      };
 
      const getProjectProgressData = () => {
@@ -693,6 +855,7 @@ const DeveloperDashboard = () => {
                          </div>
 
                          {/* Weekly Goal Progress */}
+                         {/* Weekly Goal Progress - FIXED */}
                          <div className="bg-gradient-to-br from-accent to-accent-active rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all">
                               <div className="flex items-start justify-between mb-6">
                                    <div>
@@ -742,16 +905,30 @@ const DeveloperDashboard = () => {
                                              style={{ width: `${weeklyGoal.percentage || 0}%` }}
                                         />
                                    </div>
-                                   <button
-                                        onClick={() => setShowTaskStats(!showTaskStats)}
-                                        className="w-full mt-4 text-xs font-bold hover:underline flex items-center justify-center gap-1 opacity-90"
-                                   >
-                                        View Details <ChevronRight size={12} />
-                                   </button>
+
+                                   {/* FIXED: Only show View Details button if there are completed tasks */}
+                                   {(weeklyGoal.completed > 0) ? (
+                                        <button
+                                             onClick={() => {
+                                                  // Navigate to weekly stats page or open modal
+                                                  setShowTaskStats(true);
+                                                  // You can also navigate to a detailed stats page
+                                                  // router.push('/developer/stats/weekly');
+                                             }}
+                                             className="w-full mt-4 text-xs font-bold hover:underline flex items-center justify-center gap-1 opacity-90 transition-opacity hover:opacity-100"
+                                        >
+                                             View Details <ChevronRight size={12} />
+                                        </button>
+                                   ) : (
+                                        <div className="w-full mt-4 text-xs text-center opacity-70">
+                                             No tasks completed this week
+                                        </div>
+                                   )}
                               </div>
                          </div>
                     </div>
 
+                    {/* Weekly Progress Chart */}
                     {/* Weekly Progress Chart */}
                     <div className="bg-bg-surface border border-border-default rounded-2xl p-6">
                          <div className="flex items-center justify-between mb-6">
@@ -781,9 +958,10 @@ const DeveloperDashboard = () => {
                                    </div>
                               </div>
                          </div>
+
                          <div className="h-[250px] w-full">
                               <ResponsiveContainer width="100%" height="100%">
-                                   <AreaChart data={weeklyData}>
+                                   <AreaChart data={getWeeklyProgressData()}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                                         <XAxis dataKey="day" tick={{ fill: '#94a3b8', fontSize: 12 }} />
                                         <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
@@ -795,13 +973,21 @@ const DeveloperDashboard = () => {
                                                   color: '#fff',
                                                   fontSize: '12px'
                                              }}
+                                             formatter={(value, name) => {
+                                                  if (name === 'completed') return [`${value} tasks`, 'Completed'];
+                                                  if (name === 'inProgress') return [`${value} tasks`, 'In Progress'];
+                                                  return [value, name];
+                                             }}
+                                             labelFormatter={(label) => `${label}`}
                                         />
+                                        <Legend />
                                         <Area
                                              type="monotone"
                                              dataKey="completed"
                                              stackId="1"
                                              stroke="#2563eb"
                                              fill="#2563eb80"
+                                             name="Completed"
                                         />
                                         <Area
                                              type="monotone"
@@ -809,9 +995,42 @@ const DeveloperDashboard = () => {
                                              stackId="1"
                                              stroke="#14b8a6"
                                              fill="#14b8a680"
+                                             name="In Progress"
                                         />
                                    </AreaChart>
                               </ResponsiveContainer>
+                         </div>
+
+                         {/* Optional: Show summary stats */}
+                         <div className="mt-4 grid grid-cols-3 gap-4 pt-4 border-t border-border-default">
+                              {getWeeklyProgressData().reduce((acc, day) => {
+                                   return {
+                                        totalCompleted: acc.totalCompleted + day.completed,
+                                        totalInProgress: day.inProgress, // Shows current in progress
+                                        avgPerDay: Math.round((acc.totalCompleted + day.completed) / 7)
+                                   };
+                              }, { totalCompleted: 0, totalInProgress: 0, avgPerDay: 0 }) && (
+                                        <>
+                                             <div className="text-center">
+                                                  <p className="text-xs text-text-muted">Week Total</p>
+                                                  <p className="text-lg font-bold text-text-primary">
+                                                       {getWeeklyProgressData().reduce((sum, day) => sum + day.completed, 0)}
+                                                  </p>
+                                             </div>
+                                             <div className="text-center border-x border-border-default">
+                                                  <p className="text-xs text-text-muted">Currently Active</p>
+                                                  <p className="text-lg font-bold text-accent-secondary">
+                                                       {getWeeklyProgressData().find(day => day.day === new Date().toLocaleDateString('en-US', { weekday: 'short' }))?.inProgress || 0}
+                                                  </p>
+                                             </div>
+                                             <div className="text-center">
+                                                  <p className="text-xs text-text-muted">Daily Average</p>
+                                                  <p className="text-lg font-bold text-accent">
+                                                       {Math.round(getWeeklyProgressData().reduce((sum, day) => sum + day.completed, 0) / 7)}
+                                                  </p>
+                                             </div>
+                                        </>
+                                   )}
                          </div>
                     </div>
 

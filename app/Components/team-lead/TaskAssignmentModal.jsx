@@ -79,7 +79,7 @@ const TaskAssignmentModal = ({ isOpen, onClose, task, onAssign, onUnassign }) =>
 
      return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-               <div className="bg-bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+               <div className=" chat-scroll bg-bg-surface rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-scroll">
                     {/* Header */}
                     <div className="p-6 border-b border-border-default flex justify-between items-center">
                          <div>
@@ -194,7 +194,7 @@ const TaskAssignmentModal = ({ isOpen, onClose, task, onAssign, onUnassign }) =>
                               <button
                                    type="button"
                                    onClick={onClose}
-                                   className="flex-1 px-4 py-2 border border-border-default rounded-lg hover:bg-bg-subtle transition-colors"
+                                   className="flex-1 px-4 py-2 border border-border-default rounded-lg hover:bg-red-700 hover:text-text-inverse duration-300 hover:cursor-pointer transition-colors"
                               >
                                    Cancel
                               </button>

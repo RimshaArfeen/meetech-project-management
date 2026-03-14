@@ -34,6 +34,25 @@ export function useDeveloperDashboard() {
      const [selectedTask, setSelectedTask] = useState(null);
      const router = useRouter();
 
+     // const [weeklyActivity, setWeeklyActivity] = useState([]);
+
+     // const fetchWeeklyActivity = useCallback(async () => {
+     //      try {
+     //           const response = await fetch('/api/developer/activity/weekly');
+     //           if (!response.ok) throw new Error('Failed to fetch activity');
+     //           const data = await response.json();
+     //           setWeeklyActivity(data.activity);
+     //      } catch (err) {
+     //           console.error('Error fetching weekly activity:', err);
+     //      }
+     // }, []);
+
+     // // Add to your existing fetch calls
+     // useEffect(() => {
+     //      fetchWeeklyActivity();
+     // }, [fetchWeeklyActivity]);
+
+
      const fetchDashboardData = useCallback(async () => {
           try {
                setLoading(true);
@@ -151,7 +170,7 @@ export function useDeveloperDashboard() {
      return {
           ...data,
           loading,
-          error,
+          error, 
           selectedTask,
           setSelectedTask,
           submitForReview,

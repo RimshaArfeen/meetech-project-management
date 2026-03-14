@@ -61,13 +61,13 @@ export default function ProjectsPage() {
                               </p>
                          </div>
 
-                         <button
+                         {/* <button
                               onClick={() => setIsCreateModalOpen(true)}
                               className="flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-text-inverse px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-accent/20 active:scale-95"
                          >
                               <Plus size={20} />
                               <span>New Project</span>
-                         </button>
+                         </button> */}
                     </div>
 
                     {/* Search & Filter Bar */}
@@ -171,7 +171,7 @@ export default function ProjectsPage() {
                               ))}
 
                               {/* Add Project Card */}
-                              <div
+                              {/* <div
                                    onClick={() => setIsCreateModalOpen(true)}
                                    className="border-2 border-dashed border-border-strong rounded-2xl p-6 flex flex-col items-center justify-center gap-4 text-center opacity-40 hover:opacity-100 transition-all cursor-pointer group hover:bg-accent-muted/30"
                               >
@@ -182,7 +182,7 @@ export default function ProjectsPage() {
                                         <p className="font-bold text-text-primary">Create New Project</p>
                                         <p className="text-xs text-text-muted">Start a new development cycle</p>
                                    </div>
-                              </div>
+                              </div> */}
                          </div>
                     )}
                </div>

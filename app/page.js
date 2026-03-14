@@ -13,6 +13,8 @@ import {
   ListTodo,
   CheckCircle2
 } from 'lucide-react';
+import Logo from './../public/icon.png';
+
 
 const App = () => {
 
@@ -29,13 +31,8 @@ const App = () => {
         {/* Logo and Brand */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center gap-2 text-accent font-bold text-3xl mb-3">
-            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center text-text-inverse shadow-lg shadow-accent/20">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 5C4 3.89543 4.89543 3 6 3H18C19.1046 3 20 3.89543 20 5V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V5Z" stroke="currentColor" strokeWidth="2" />
-                <path d="M8 7H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M8 11H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M8 15H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-text-inverse">
+             <img src={Logo.src} alt="Meetech Logo" className="w-full h-full" />
             </div>
             <span className="tracking-tight text-text-primary">Meetech</span>
           </div>

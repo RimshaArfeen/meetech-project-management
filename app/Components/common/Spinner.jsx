@@ -26,7 +26,7 @@ const Spinner = ({ title }) => {
                     <h2 className="text-ui font-black uppercase tracking-[0.3em] text-accent animate-pulse">
                          Synchronizing
                     </h2>
-                    <p className="mt-2 text-headline font-bold text-text-primary">
+                    <p className="mt-2 text-headline font-bold text-text-primary capitalize">
                          {title}
                     </p>
                     <div className="mt-4 flex gap-1.5 justify-center">

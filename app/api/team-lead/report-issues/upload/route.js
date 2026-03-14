@@ -1,11 +1,7 @@
-
-
 import { NextResponse } from 'next/server';
 import { verifyAccessToken } from '../../../../../lib/auth/jwt';
 import prisma from '../../../../../lib/prisma';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import cloudinary from '../../../../../lib/cloudinary';
 
 export async function POST(request) {
      try {
@@ -63,50 +59,55 @@ export async function POST(request) {
           const bytes = await file.arrayBuffer();
           const buffer = Buffer.from(bytes);
 
-          // Generate unique filename
-          const ext = path.extname(file.name);
-          const filename = `issue-${uuidv4()}${ext}`;
+          // Upload to Cloudinary
+          const uploadResult = await new Promise((resolve, reject) => {
+               const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                         folder: 'issue-reports',          // optional folder in Cloudinary
+                         public_id: `issue-${Date.now()}-${Math.round(Math.random() * 1000)}`,
+                         resource_type: 'auto',            // auto-detect file type
+                    },
+                    (error, result) => {
+                         if (error) reject(error);
+                         else resolve(result);
+                    }
+               );
+               uploadStream.end(buffer);
+          });
 
-          // Ensure upload directory exists
-          const uploadDir = path.join(process.cwd(), 'public/uploads/issues');
-          await mkdir(uploadDir, { recursive: true });
+          // Cloudinary returns secure_url and public_id
+          const fileUrl = uploadResult.secure_url;
+          const publicId = uploadResult.public_id;
 
-          // Save file
-          const filepath = path.join(uploadDir, filename);
-          await writeFile(filepath, buffer);
-
-          // Public URL
-          const fileUrl = `/uploads/issues/${filename}`;
-
-          // Create document record if projectId is provided
+          // Optionally create a document record in the database
           let document = null;
           if (projectId) {
                document = await prisma.document.create({
                     data: {
                          name: file.name,
-                         fileName: filename,
+                         fileName: publicId,                 // store Cloudinary public_id
                          fileSize: file.size,
                          fileType: file.type,
-                         url: fileUrl,
+                         url: fileUrl,                        // Cloudinary URL
                          type: 'PROJECT_DOC',
                          projectId,
-                         uploadedById: decoded.id
-                    }
+                         uploadedById: decoded.id,
+                    },
                });
           }
 
           return NextResponse.json({
                success: true,
-               fileUrl,
+               fileUrl,                                 // Cloudinary URL
                fileName: file.name,
                fileSize: file.size,
-               document
+               publicId,                                // optional, for deletion later
+               document,
           });
-
      } catch (error) {
-          console.error('File upload error:', error);
+          console.error('Cloudinary upload error:', error);
           return NextResponse.json(
-               { error: 'Failed to upload file' },
+               { error: 'Failed to upload file to Cloudinary' },
                { status: 500 }
           );
      }

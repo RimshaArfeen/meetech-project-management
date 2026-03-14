@@ -122,29 +122,81 @@ export function useTeamLeadDashboard() {
           }
      };
 
-     const reportIssue = async (issueData) => {
-          try {
-               const response = await fetch('/api/team-lead/issues', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(issueData)
-               });
+     // const reportIssue = async (issueData) => {
 
-               if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to report issue');
-               }
+     //      try {
+     //           const response = await fetch('/api/team-lead/issues', {
+     //                method: 'POST',
+     //                headers: { 'Content-Type': 'application/json' },
+     //                body: JSON.stringify(issueData)
+     //           });
 
-               return await response.json();
-          } catch (err) {
-               console.error('Error reporting issue:', err);
-               throw err;
-          }
-     };
+     //           if (!response.ok) {
+     //                const error = await response.json();
+     //                throw new Error(error.error || 'Failed to report issue');
+     //           }
+
+     //           return await response.json();
+     //      } catch (err) {
+     //           console.error('Error reporting issue:', err);
+     //           throw err;
+     //      }
+     // };
 
 
      // hooks/useTeamLeadDashboard.js
      // Add these functions inside your hook:
+
+
+     const reportIssue = async (issueData) => {
+          try {
+               const response = await fetch('/api/team-lead/report-issues', {
+                    method: 'POST',
+                    headers: {
+                         'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(issueData)
+               });
+
+               // First check if response is OK
+               if (!response.ok) {
+                    // Try to parse error as JSON
+                    try {
+                         const errorData = await response.json();
+                         throw new Error(errorData.error || `Failed to report issue (${response.status})`);
+                    } catch {
+                         // If not JSON, get text and create error
+                         const text = await response.text();
+                         throw new Error(`Server error: ${response.status}. ${text.substring(0, 100)}`);
+                    }
+               }
+
+               const data = await response.json();
+
+               // Show success message
+               await MySwal.fire({
+                    title: 'Success!',
+                    text: 'Issue reported to Project Manager successfully',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+               });
+
+               return data;
+          } catch (err) {
+               console.error('Error reporting issue:', err);
+
+               // Show error message
+               await MySwal.fire({
+                    title: 'Error',
+                    text: err.message,
+                    icon: 'error',
+                    confirmButtonColor: '#b91c1c'
+               });
+
+               throw err; // Re-throw for component handling
+          }
+     };
 
      const assignTask = useCallback(async (taskId, developerId) => {
           try {
